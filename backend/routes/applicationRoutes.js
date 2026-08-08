@@ -8,11 +8,11 @@ const {
 } = require('../controllers/applicationController');
 const { protect, admin } = require('../middleware/auth');
 
-// Public or optional auth route to submit application
+// Public route to view approved club members & submit applications
+router.get('/', getApplications);
 router.post('/', createApplication);
 
 // Admin routes
-router.get('/', protect,  getApplications);
 router.put('/:id/status', protect, admin, updateApplicationStatus);
 router.delete('/:id', protect, admin, deleteApplication);
 

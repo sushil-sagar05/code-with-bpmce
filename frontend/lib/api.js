@@ -16,14 +16,18 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
-// Auto-logout on 401
+// Auto-logout on 401 (only if token existed or for protected user actions)
 api.interceptors.response.use(
   (res) => res,
   (error) => {
     if (error.response?.status === 401 && typeof window !== 'undefined') {
+      const hasToken = !!localStorage.getItem('cwb_token');
       localStorage.removeItem('cwb_token');
       localStorage.removeItem('cwb_user');
-      window.location.href = '/login';
+      const isPublicRoute = ['/members', '/blogs', '/projects', '/achievements', '/leaderboard', '/events', '/resources', '/about', '/roadmaps'].some(p => window.location.pathname.startsWith(p));
+      if (hasToken && !isPublicRoute) {
+        window.location.href = '/login';
+      }
     }
     return Promise.reject(error);
   }
