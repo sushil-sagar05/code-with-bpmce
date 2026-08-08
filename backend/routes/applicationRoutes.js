@@ -2,17 +2,19 @@ const express = require('express');
 const router = express.Router();
 const {
   createApplication,
+  getMyApplication,
   getApplications,
   updateApplicationStatus,
   deleteApplication,
 } = require('../controllers/applicationController');
 const { protect, admin } = require('../middleware/auth');
 
-// Public route to view approved club members & submit applications
-router.get('/', getApplications);
-router.post('/', createApplication);
+router.get('/my-application', protect, getMyApplication);
 
-// Admin routes
+router.get('/', getApplications);
+router.post('/', protect, createApplication);
+
+
 router.put('/:id/status', protect, admin, updateApplicationStatus);
 router.delete('/:id', protect, admin, deleteApplication);
 

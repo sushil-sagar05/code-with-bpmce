@@ -1072,7 +1072,7 @@ export default function AdminPage() {
   const router = useRouter();
 
   useEffect(() => {
-    if (!authLoading && (!user || !isAdmin)) router.push('/admin/login');
+    if (!authLoading && (!user || !isAdmin)) router.push('/login');
   }, [user, isAdmin, authLoading, router]);
 
   useEffect(() => {

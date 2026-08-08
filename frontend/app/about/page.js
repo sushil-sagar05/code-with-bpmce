@@ -12,7 +12,7 @@ const values = [
 ];
 
 const team = [
-  { name: 'Aarav Shah', role: 'Club President', batch: '2024', branch: 'CSE' },
+  { name: 'Rajnish Maurya', role: 'Club President', batch: '2023', branch: 'CSE(ai & ml)' },
   { name: 'Neha Singh', role: 'Vice President', batch: '2024', branch: 'IT' },
   { name: 'Ravi Kumar', role: 'Tech Lead', batch: '2025', branch: 'CSE' },
   { name: 'Pooja Verma', role: 'Events Head', batch: '2025', branch: 'ECE' },

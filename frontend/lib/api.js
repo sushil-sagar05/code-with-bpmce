@@ -116,6 +116,7 @@ export const uploadAPI = {
 // ─── Applications ────────────────────────────────────────────────────────────
 export const applicationsAPI = {
   create: (data) => api.post('/applications', data),
+  getMyApplication: () => api.get('/applications/my-application'),
   getAll: (params) => api.get('/applications', { params }),
   updateStatus: (id, status) => api.put(`/applications/${id}/status`, { status }),
   delete: (id) => api.delete(`/applications/${id}`),

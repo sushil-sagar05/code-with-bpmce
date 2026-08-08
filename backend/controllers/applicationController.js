@@ -5,9 +5,18 @@ const User = require('../models/User');
 const createApplication = async (req, res) => {
   try {
     const { name, email, phone, branch, year, tracks, motivation, github } = req.body;
-    
-    // Optional logged in user
-    const userId = req.user ? req.user._id : null;
+    const userId = req.user._id;
+    const existing = await Application.findOne({
+      $or: [{ user: userId }, { email: email || req.user.email }],
+    });
+
+    if (existing) {
+      return res.status(400).json({
+        success: false,
+        message: `An application has already been submitted for this account (${existing.status}).`,
+        data: existing,
+      });
+    }
 
     const application = await Application.create({
       name,
@@ -23,6 +32,19 @@ const createApplication = async (req, res) => {
     });
 
     res.status(201).json({ success: true, data: application });
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
+  }
+};
+
+// Get current user's application
+const getMyApplication = async (req, res) => {
+  try {
+    const application = await Application.findOne({
+      $or: [{ user: req.user._id }, { email: req.user.email }],
+    }).sort({ createdAt: -1 });
+
+    res.json({ success: true, data: application || null });
   } catch (err) {
     res.status(500).json({ success: false, message: err.message });
   }
@@ -89,6 +111,7 @@ const deleteApplication = async (req, res) => {
 
 module.exports = {
   createApplication,
+  getMyApplication,
   getApplications,
   updateApplicationStatus,
   deleteApplication,
