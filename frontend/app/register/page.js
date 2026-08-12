@@ -5,8 +5,8 @@ import { motion } from 'framer-motion';
 import { Code2, Mail, Lock, User, Eye, EyeOff, ArrowRight, AlertCircle } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 
-const branches = ['CSE', 'IT', 'ECE', 'EE', 'ME', 'CE', 'Other'];
-const years = ['2024', '2025', '2026', '2027', '2028'];
+const branches = ['CSE', 'IT', 'ECE', 'EE', 'ME', 'CE','CSE(AI & ML)','3DAG', 'Other'];
+const years = ['2023','2024', '2025', '2026', '2027', '2028'];
 
 export default function RegisterPage() {
   const [show, setShow] = useState(false);
