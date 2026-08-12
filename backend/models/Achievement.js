@@ -16,7 +16,7 @@ const achievementSchema = new mongoose.Schema(
     proof: { type: String, default: '' },
     image: { type: String, default: '' },
     isVerified: { type: Boolean, default: false },
-    points: { type: Number, default: 10 },
+    points: { type: Number, default: 50 },
   },
   { timestamps: true }
 );

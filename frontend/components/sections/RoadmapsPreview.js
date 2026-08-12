@@ -36,7 +36,10 @@ function RoadmapCard({ roadmap, index }) {
   const slug = roadmap.slug || roadmap.category || 'web-dev';
   const Icon = iconMap[slug] || iconMap[roadmap.category] || Globe;
   const color = categoryColors[slug] || categoryColors[roadmap.category] || '#FF6B00';
-  const time = roadmap.estimatedTime || '4 months';
+  const time = roadmap.estimatedTime || '3 months';
+  const chaptersCount = Array.isArray(roadmap.chapters) && roadmap.chapters.length > 0
+    ? roadmap.chapters.length
+    : Array.isArray(roadmap.nodes) ? roadmap.nodes.length : 0;
   const title = roadmap.title;
   const desc = roadmap.description || roadmap.desc;
 
@@ -48,24 +51,44 @@ function RoadmapCard({ roadmap, index }) {
       transition={{ delay: index * 0.08, duration: 0.5 }}
     >
       <Link href={`/roadmaps/${slug}`} className="block h-full">
-        <div className="card-dark roadmap-card p-6 h-full group cursor-pointer flex flex-col">
-          <div className="flex items-start justify-between mb-4">
+        <div 
+          className="bg-[#0b0e17] border border-[#141a27] hover:border-[#1d263b] rounded-2xl p-6 h-full group cursor-pointer flex flex-col transition-all duration-300 relative overflow-hidden shadow-lg hover:shadow-2xl transform-gpu z-10"
+          style={{ WebkitMaskImage: '-webkit-radial-gradient(white, black)' }}
+        >
+          {/* Top Glow Accent (SVG radial-gradient fallback approach to avoid Webkit CSS filter: blur bugs) */}
+          <div
+            className="absolute -top-16 -right-16 w-32 h-32 pointer-events-none transform-gpu z-0 rounded-full"
+            style={{
+              background: `radial-gradient(circle, ${color} 0%, rgba(11, 14, 23, 0) 70%)`,
+              opacity: 0.15
+            }}
+          />
+
+          <div className="flex items-start justify-between mb-5">
             <div
-              className="w-12 h-12 rounded-lg flex items-center justify-center transition-transform group-hover:scale-110"
+              className="w-12 h-12 rounded-xl flex items-center justify-center transition-all duration-300 group-hover:scale-105 shadow-md"
               style={{ background: `${color}15`, border: `1px solid ${color}30` }}
             >
-              <Icon className="w-6 h-6" style={{ color }} />
+              <Icon className="w-5.5 h-5.5" style={{ color }} />
             </div>
-            <ArrowRight
-              className="w-4 h-4 text-[#4a4a4a] group-hover:text-[#FF6B00] transition-all group-hover:translate-x-1"
-            />
+            {chaptersCount > 0 && (
+              <span className="font-mono text-[9px] text-[#22c55e] bg-[#22c55e]/10 border border-[#22c55e]/20 px-2.5 py-0.5 rounded-full font-bold uppercase tracking-wider">
+                {chaptersCount} Chapters
+              </span>
+            )}
           </div>
-          <h3 className="font-display font-bold text-lg text-white mb-2 group-hover:text-[#FF6B00] transition-colors">
+          
+          <h3 className="font-display font-bold text-lg text-white mb-2 group-hover:text-[#FF6B00] transition-colors leading-snug">
             {title}
           </h3>
-          <p className="text-[#6a6a6a] text-sm font-dosis leading-relaxed mb-4 flex-1 line-clamp-3">{desc}</p>
-          <div className="flex items-center gap-2 mt-auto pt-2 border-t border-[#1f1f1f]">
-            <span className="font-mono text-[10px] text-[#4a4a4a] uppercase tracking-wide">⏱ {time}</span>
+          
+          <p className="text-[#8c9cb5] text-xs font-dosis leading-relaxed mb-4 flex-1 line-clamp-3">{desc}</p>
+          
+          <div className="flex items-center justify-between mt-auto pt-3 border-t border-[#141a27]">
+            <span className="font-mono text-[10px] text-[#8c9cb5] flex items-center gap-1.5 bg-[#0f1422] px-2.5 py-1 rounded-lg border border-[#1d263b]">⏱ {time}</span>
+            <span className="text-xs font-mono font-bold text-[#FF6B00] group-hover:translate-x-1.5 transition-transform flex items-center gap-1">
+              Explore Track <ArrowRight className="w-3.5 h-3.5" />
+            </span>
           </div>
         </div>
       </Link>

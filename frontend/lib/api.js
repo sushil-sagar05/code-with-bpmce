@@ -72,6 +72,7 @@ export const blogsAPI = {
 // ─── Achievements ────────────────────────────────────────────────────────────
 export const achievementsAPI = {
   getAll: (params) => api.get('/achievements', { params }),
+  getById: (id) => api.get(`/achievements/${id}`),
   create: (data) => api.post('/achievements', data),
   verify: (id) => api.put(`/achievements/${id}/verify`),
   reject: (id) => api.delete(`/achievements/${id}`),

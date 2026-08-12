@@ -36,16 +36,32 @@ const getUserById = async (req, res) => {
 const updateUser = async (req, res) => {
   try {
     const { password, role, ...rest } = req.body;
-    // If avatar is changing, delete the old one from Cloudinary
-    const existing = await User.findById(req.params.id).select('avatar');
-    if (existing) {
-      const oldAvatar = existing.avatar;
-      const newAvatar = rest.avatar;
-      // Delete old avatar if it's being replaced or removed
-      if (oldAvatar && newAvatar !== undefined && oldAvatar !== newAvatar) {
-        await deleteCloudinaryImage(oldAvatar);
-      }
+    const existing = await User.findById(req.params.id);
+    if (!existing) return res.status(404).json({ success: false, message: 'User not found' });
+
+    // Handle avatar cleanup on Cloudinary
+    if (existing.avatar && rest.avatar !== undefined && existing.avatar !== rest.avatar) {
+      await deleteCloudinaryImage(existing.avatar);
     }
+
+    let addedPoints = 0;
+
+    // Check newly added social links (+5 points each)
+    if (!existing.linkedin && rest.linkedin && rest.linkedin.trim() !== '') addedPoints += 5;
+    if (!existing.github && rest.github && rest.github.trim() !== '') addedPoints += 5;
+    if (!existing.leetcode && rest.leetcode && rest.leetcode.trim() !== '') addedPoints += 5;
+    if (!existing.codeforces && rest.codeforces && rest.codeforces.trim() !== '') addedPoints += 5;
+
+    // Check newly added experience entries (+10 points for new entry)
+    if (Array.isArray(rest.experience) && rest.experience.length > (existing.experience?.length || 0)) {
+      const diff = rest.experience.length - (existing.experience?.length || 0);
+      addedPoints += diff * 10;
+    }
+
+    if (addedPoints > 0) {
+      rest.points = (existing.points || 0) + addedPoints;
+    }
+
     const user = await User.findByIdAndUpdate(req.params.id, rest, { new: true }).select('-password');
     res.json({ success: true, data: user });
   } catch (err) {

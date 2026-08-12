@@ -5,12 +5,14 @@ import { achievementsAPI } from '@/lib/api';
 import { Loader2, ArrowLeft, CheckCircle, ExternalLink, Award, User, Calendar, Building } from 'lucide-react';
 import Link from 'next/link';
 import toast from 'react-hot-toast';
+import { useAuth } from '@/context/AuthContext';
 
 import PageLoader, { ButtonLoader } from '@/components/ui/PageLoader';
 
 export default function AchievementDetailPage() {
   const params = useParams();
   const router = useRouter();
+  const { isAdmin } = useAuth();
   const [achievement, setAchievement] = useState(null);
   const [loading, setLoading] = useState(true);
   const [actionLoading, setActionLoading] = useState(false);
@@ -18,19 +20,16 @@ export default function AchievementDetailPage() {
   useEffect(() => {
     if (params?.id) {
       setLoading(true);
-      Promise.allSettled([
-        achievementsAPI.getAll({ verified: false }),
-        achievementsAPI.getAll({ verified: true }),
-      ]).then(([unverifiedRes, verifiedRes]) => {
-        const unverifiedList = unverifiedRes.value?.data?.data || [];
-        const verifiedList = verifiedRes.value?.data?.data || [];
-        const found = [...unverifiedList, ...verifiedList].find(a => a._id === params.id);
-        setAchievement(found || null);
-      }).catch(() => {
-        toast.error('Failed to load achievement');
-      }).finally(() => {
-        setLoading(false);
-      });
+      achievementsAPI.getById(params.id)
+        .then(({ data }) => {
+          setAchievement(data.data || null);
+        })
+        .catch(() => {
+          toast.error('Failed to load achievement');
+        })
+        .finally(() => {
+          setLoading(false);
+        });
     }
   }, [params?.id]);
 
@@ -197,8 +196,8 @@ export default function AchievementDetailPage() {
 
           </div>
 
-          {/* Admin Review Action Bar */}
-          {!achievement.isVerified && (
+          {/* Admin Review Action Bar (Only visible to Admins) */}
+          {isAdmin && !achievement.isVerified && (
             <div className="pt-6 border-t border-[#1f1f1f] flex items-center justify-end gap-3">
               <button
                 onClick={handleReject}

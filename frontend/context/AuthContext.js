@@ -49,10 +49,11 @@ export function AuthProvider({ children }) {
       persist(data.token, data.user);
       toast.success(`Welcome back, ${data.user.name.split(' ')[0]}! 🚀`);
       // Redirect based on role
-      if (data.user.role === 'admin') {
-        router.push('/admin');
-      } else {
-        router.push('/dashboard');
+      const targetPath = data.user.role === 'admin' ? '/admin' : '/dashboard';
+      try {
+        router.replace(targetPath);
+      } catch (_) {
+        window.location.href = targetPath;
       }
       return { success: true, user: data.user };
     } catch (err) {

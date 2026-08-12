@@ -25,10 +25,11 @@ const getAchievements = async (req, res) => {
 
 const createAchievement = async (req, res) => {
   try {
-    const achievement = await Achievement.create({ ...req.body, student: req.user._id });
+    const pointsToAward = req.body.points || 50;
+    const achievement = await Achievement.create({ ...req.body, points: pointsToAward, student: req.user._id });
     await User.findByIdAndUpdate(req.user._id, {
       $push: { achievements: achievement._id },
-      $inc: { points: achievement.points },
+      $inc: { points: pointsToAward },
     });
     res.status(201).json({ success: true, data: achievement });
   } catch (err) {
@@ -62,4 +63,15 @@ const deleteAchievement = async (req, res) => {
   }
 };
 
-module.exports = { getAchievements, createAchievement, verifyAchievement, deleteAchievement };
+const getAchievementById = async (req, res) => {
+  try {
+    const achievement = await Achievement.findById(req.params.id)
+      .populate('student', 'name avatar branch batch email');
+    if (!achievement) return res.status(404).json({ success: false, message: 'Achievement not found' });
+    res.json({ success: true, data: { ...achievement.toObject(), user: achievement.student } });
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
+  }
+};
+
+module.exports = { getAchievements, getAchievementById, createAchievement, verifyAchievement, deleteAchievement };

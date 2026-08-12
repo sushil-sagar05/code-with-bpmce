@@ -17,8 +17,10 @@ export default function LoginPage() {
     setError('');
     setLoading(true);
     const result = await login(form.email, form.password);
-    if (!result.success) setError(result.message);
-    setLoading(false);
+    if (!result.success) {
+      setError(result.message);
+      setLoading(false);
+    }
   };
 
   return (

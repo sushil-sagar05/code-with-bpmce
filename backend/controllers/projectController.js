@@ -1,4 +1,5 @@
 const Project = require('../models/Project');
+const User = require('../models/User');
 
 const getProjects = async (req, res) => {
   try {
@@ -19,6 +20,10 @@ const getProjects = async (req, res) => {
 const createProject = async (req, res) => {
   try {
     const project = await Project.create({ ...req.body, addedBy: req.user._id });
+    await User.findByIdAndUpdate(req.user._id, {
+      $push: { projects: project._id },
+      $inc: { points: 20 },
+    });
     res.status(201).json({ success: true, data: project });
   } catch (err) {
     res.status(500).json({ success: false, message: err.message });

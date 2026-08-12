@@ -12,24 +12,25 @@ import { useAuth } from '@/context/AuthContext';
 import { usersAPI, achievementsAPI, eventsAPI, blogsAPI, projectsAPI, roadmapsAPI, applicationsAPI, resourcesAPI } from '@/lib/api';
 import toast from 'react-hot-toast';
 import DetailModal from '@/components/ui/DetailModal';
+import AdminRoadmapPanel from '@/components/admin/AdminRoadmapPanel';
 import PageLoader, { SectionLoader, ButtonLoader } from '@/components/ui/PageLoader';
 
 // ─── Stat Card Component ───────────────────────────────────────────────────
 function StatsCard({ label, value, icon: Icon, color = 'red' }) {
   const colors = {
-    red: 'bg-red-500/10 border-red-500/20 text-red-400',
-    orange: 'bg-[#FF6B00]/10 border-[#FF6B00]/20 text-[#FF6B00]',
-    green: 'bg-green-500/10 border-green-500/20 text-green-400',
-    blue: 'bg-blue-500/10 border-blue-500/20 text-blue-400',
+    red: 'bg-red-500/10 border-red-500/30 text-red-400',
+    orange: 'bg-[#FF6B00]/10 border-[#FF6B00]/30 text-[#FF6B00]',
+    green: 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400',
+    blue: 'bg-blue-500/10 border-blue-500/30 text-blue-400',
   };
   return (
-    <div className="bg-[#111111] border border-[#1f1f1f] rounded-xl p-5 flex items-center gap-4">
-      <div className={`w-11 h-11 rounded-xl border flex items-center justify-center flex-shrink-0 ${colors[color]}`}>
-        <Icon className="w-5 h-5" />
+    <div className="bg-[#11131a] border border-[#1e2330] hover:border-[#2b3245] rounded-2xl p-5 flex items-center gap-4 transition-all duration-200 shadow-sm group">
+      <div className={`w-12 h-12 rounded-xl border flex items-center justify-center flex-shrink-0 transition-transform group-hover:scale-105 ${colors[color]}`}>
+        <Icon className="w-6 h-6" />
       </div>
-      <div>
-        <p className="text-[#555555] font-mono text-[10px] uppercase tracking-wider">{label}</p>
-        <p className="text-white font-display font-bold text-2xl">{value ?? '—'}</p>
+      <div className="min-w-0">
+        <p className="text-[#667085] font-mono text-[10px] uppercase tracking-wider font-semibold">{label}</p>
+        <p className="text-white font-display font-bold text-2xl sm:text-3xl mt-0.5">{value ?? '—'}</p>
       </div>
     </div>
   );
@@ -1120,27 +1121,39 @@ export default function AdminPage() {
   return (
     <div className="min-h-screen bg-[#0a0a0a] pt-16 flex flex-col md:flex-row">
 
-      {/* Admin Red Sidebar - Fixed/Sticky on Desktop */}
-      <aside className="w-full md:w-64 bg-[#0d0a0a] border-r border-red-500/20 p-4 flex flex-col flex-shrink-0 md:sticky md:top-16 md:h-[calc(100vh-4rem)]">
-        
+      {/* Premium Sleek Admin Sidebar - Sticky on Desktop */}
+      <aside className="w-full md:w-64 bg-[#0c0d10] border-r border-[#1e222d] p-4 flex flex-col flex-shrink-0 md:sticky md:top-16 md:h-[calc(100vh-4rem)] z-20">
+        <div className="px-3.5 py-3 mb-2 rounded-xl bg-[#131620] border border-[#1e2330] flex items-center justify-between">
+          <div className="flex items-center gap-2.5">
+            <div className="w-7 h-7 rounded-lg bg-red-500/15 border border-red-500/30 text-red-400 font-mono font-bold text-xs flex items-center justify-center">
+              A
+            </div>
+            <div>
+              <p className="text-white font-dosis font-bold text-xs leading-tight">Admin Console</p>
+              <p className="text-[#667085] font-mono text-[10px]">CodeWithBPMCE</p>
+            </div>
+          </div>
+          <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" title="System Online" />
+        </div>
+
         {/* Sidebar Nav */}
-        <nav className="space-y-1 flex-1">
+        <nav className="space-y-1 flex-1 overflow-y-auto pr-0.5">
           {adminNav.map(({ id, label, icon: Icon, badge }) => (
             <button
               key={id}
               onClick={() => setActiveTab(id)}
-              className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-lg font-dosis font-semibold text-sm transition-all ${
+              className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl font-dosis font-bold text-xs transition-all ${
                 activeTab === id
-                  ? 'bg-red-500/15 text-red-400 border border-red-500/30 shadow-md'
-                  : 'text-[#888] hover:text-white hover:bg-[#150d0d]'
+                  ? 'bg-gradient-to-r from-red-500/20 to-orange-500/10 text-white border border-red-500/40 shadow-sm'
+                  : 'text-[#8896ab] hover:text-white hover:bg-[#141824]'
               }`}
             >
               <div className="flex items-center gap-2.5">
-                <Icon className="w-4 h-4" />
+                <Icon className={`w-4 h-4 ${activeTab === id ? 'text-red-400' : 'text-[#667085]'}`} />
                 <span>{label}</span>
               </div>
               {badge !== undefined && badge > 0 && (
-                <span className="font-mono text-[10px] bg-red-500/20 text-red-400 border border-red-500/30 px-2 py-0.5 rounded-full">
+                <span className="font-mono text-[10px] bg-red-500/20 text-red-400 border border-red-500/30 px-2 py-0.5 rounded-full font-bold">
                   {badge}
                 </span>
               )}
@@ -1149,8 +1162,8 @@ export default function AdminPage() {
         </nav>
 
         {/* Logout */}
-        <div className="pt-4 border-t border-red-500/20 mt-auto">
-          <button onClick={logout} className="w-full flex items-center gap-2 px-3.5 py-2 rounded-lg text-red-400/70 hover:text-red-400 hover:bg-red-500/10 font-dosis font-semibold text-xs transition-colors">
+        <div className="pt-3 border-t border-[#1e222d] mt-auto">
+          <button onClick={logout} className="w-full flex items-center gap-2 px-3.5 py-2.5 rounded-xl text-red-400/80 hover:text-red-400 hover:bg-red-500/10 font-dosis font-bold text-xs transition-colors">
             <LogOut className="w-3.5 h-3.5" /> Sign Out Admin
           </button>
         </div>
@@ -1195,7 +1208,7 @@ export default function AdminPage() {
             {activeTab === 'achievements' && <AchievementsPanel onViewDetail={handleViewDetail} />}
             {activeTab === 'blogs' && <BlogsManagementPanel onViewDetail={handleViewDetail} />}
             {activeTab === 'resources' && <AddResourcePanel />}
-            {activeTab === 'roadmaps' && <AddRoadmapPanel />}
+            {activeTab === 'roadmaps' && <AdminRoadmapPanel />}
             {activeTab === 'events' && <CreateEventPanel />}
 
           </motion.div>

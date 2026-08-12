@@ -35,7 +35,7 @@ export default function LeaderboardPage() {
               Club <span className="text-gradient">Leaderboard</span>
             </h1>
             <p className="text-[#6a6a6a] text-xl font-dosis max-w-2xl">
-              Top performers ranked by combined achievements, coding ratings, and contributions.
+              Top performers ranked by points earned (+50 for achievements, +20 for projects, +10 for work experience, +5 for connecting profiles).
             </p>
           </motion.div>
         </div>
