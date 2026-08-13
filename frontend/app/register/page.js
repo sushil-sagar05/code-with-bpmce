@@ -6,7 +6,7 @@ import { Code2, Mail, Lock, User, Eye, EyeOff, ArrowRight, AlertCircle } from 'l
 import { useAuth } from '@/context/AuthContext';
 
 const branches = ['CSE', 'IT', 'ECE', 'EE', 'ME', 'CE','CSE(AI & ML)','3DAG', 'Other'];
-const years = ['2023','2024', '2025', '2026', '2027', '2028'];
+const years = ['2021','2022','2023','2024', '2025', '2026'];
 
 export default function RegisterPage() {
   const [show, setShow] = useState(false);
