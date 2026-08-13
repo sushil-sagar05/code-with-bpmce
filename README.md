@@ -14,7 +14,7 @@
 
 ## 📖 About The Project
 
-**TechHub** is a college-focused technology platform designed to bring the entire student tech ecosystem into one place.
+**Devbuddies** is a college-focused technology platform designed to bring the entire student tech ecosystem into one place.
 
 College students often have to search across multiple websites, social media platforms, college groups, and communities to find useful resources, coding contests, events, hackathons, internships, blogs, and learning materials.
 
