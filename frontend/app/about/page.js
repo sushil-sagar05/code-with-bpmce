@@ -20,94 +20,53 @@ const team = [
   {
     name: 'SUJEET KUMAR',
     role: 'Founder',
-    batch: '',
     branch: 'Assistant Professor CSE',
-    //bio: 'Full-Stack Developer & Community Builder. Passionate about AI, Open Source, and scaling student dev communities.',
-    avatar: 'https://res.cloudinary.com/dz3yaj24a/image/upload/v1786593249/vishnu_sp3gnz.jpg',
+    bio: 'PhD researcher at IIT Kharagpur working on NLP, Sanskrit language processing, machine translation, and speech recognition using AI and machine learning.',
+    avatar: 'https://res.cloudinary.com/dz3yaj24a/image/upload/v1786648230/my_pic_gen_AI_1_1_iugk0k.jpg',
     github: 'https://github.com/SujeetNlp ',
-    //linkedin: 'https://www.linkedin.com/in/rajnishkuma/',
     email: 'ksujeet.cs@gmail.com',
     skills: [ 'AI/ML', 'NLP', 'Speech Processing', 'Machine Translation' ],
-    //achievements: 'GSoC Contributor • Hackfest Winner 2025'
   },
   {
     name: 'Rajnish Maurya',
-    role: 'Club President',
+    role: 'Club Head',
     batch: '2023',
     branch: 'CSE (AI & ML)',
-    bio: 'Full-Stack Developer & Community Builder. Passionate about AI, Open Source, and scaling student dev communities.',
+    bio: 'Full-Stack Developer at Aero2Astro & Community Builder. Passionate about AI, Open Source, and scaling student dev communities.',
     avatar: 'https://res.cloudinary.com/dz3yaj24a/image/upload/v1786593249/vishnu_sp3gnz.jpg',
     github: 'https://github.com/rajnish032',
     linkedin: 'https://www.linkedin.com/in/rajnishkuma/',
     email: 'rajnishmaurya250@gmail.com',
-    skills: ['Full Stack', 'AI/ML', 'System Design'],
+    skills: ['Full Stack', 'Gen Ai', 'Devops'],
     achievements: 'GSoC Contributor • Hackfest Winner 2025'
   },
-  // {
-  //   name: 'Neha Singh',
-  //   role: 'Vice President',
-  //   batch: '2024',
-  //   branch: 'Information Technology',
-  //   bio: 'Cloud Architect & Operations Head. Driving technical events, mentorship tracks, and industry partnerships.',
-  //   avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Neha',
-  //   github: 'https://github.com',
-  //   linkedin: 'https://linkedin.com',
-  //   email: 'neha@bpmce.ac.in',
-  //   skills: ['Cloud & DevOps', 'React', 'Community'],
-  //   achievements: 'AWS Community Lead'
-  // },
-  // {
-  //   name: 'Ravi Kumar',
-  //   role: 'Tech Lead',
-  //   batch: '2025',
-  //   branch: 'Computer Science',
-  //   bio: 'Backend Specialist & Competitive Programmer. Architecting scalable web applications and leading open-source projects.',
-  //   avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Ravi',
-  //   github: 'https://github.com',
-  //   linkedin: 'https://linkedin.com',
-  //   email: 'rajnishmaurya250@gmail.com',
-  //   skills: ['Node.js', 'Go', 'System Architecture'],
-  //   achievements: 'Candidate Master @ Codeforces'
-  // },
-  // {
-  //   name: 'Pooja Verma',
-  //   role: 'Events & PR Head',
-  //   batch: '2025',
-  //   branch: 'Electronics & Comm.',
-  //   bio: 'UI/UX Designer & Event Manager. Organizing campus hackathons, workshops, and fostering inclusive learning.',
-  //   avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Pooja',
-  //   github: 'https://github.com',
-  //   linkedin: 'https://linkedin.com',
-  //   email: 'pooja@bpmce.ac.in',
-  //   skills: ['UI/UX Design', 'Event Ops', 'Figma'],
-  //   achievements: 'Organized 10+ Tech Summits'
-  // },
-  // {
-  //   name: 'Amit Rai',
-  //   role: 'DSA & CP Lead',
-  //   batch: '2026',
-  //   branch: 'Computer Science',
-  //   bio: 'Algorithm Enthusiast & Problem Solver. Mentoring 200+ students in Data Structures and Competitive Coding.',
-  //   avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Amit',
-  //   github: 'https://github.com',
-  //   linkedin: 'https://linkedin.com',
-  //   email: 'amit@bpmce.ac.in',
-  //   skills: ['C++', 'DSA', 'Algorithms'],
-  //   achievements: 'Knight @ LeetCode'
-  // },
-  // {
-  //   name: 'Suman Das',
-  //   role: 'ML & AI Lead',
-  //   batch: '2026',
-  //   branch: 'Computer Science',
-  //   bio: 'Deep Learning Researcher & PyTorch enthusiast. Leading hands-on AI projects and NLP workshops for members.',
-  //   avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Suman',
-  //   github: 'https://github.com',
-  //   linkedin: 'https://linkedin.com',
-  //   email: 'suman@bpmce.ac',
-  //   skills: ['Python', 'PyTorch', 'Computer Vision'],
-  //   achievements: 'Kaggle Competition Winner'
-  // },
+  
+   {
+    name: 'Sushil Sagar',
+    role: 'Tech Lead',
+    batch: '2023',
+    branch: 'Computer Science',
+    bio: 'Full-Stack AI Developer focused on building intelligent, scalable, and AI-powered applications.',
+    avatar: 'https://res.cloudinary.com/dz3yaj24a/image/upload/v1786650730/WhatsApp_Image_2026-08-14_at_01.20.14_y62tth.jpg',
+    github: 'https://github.com/sushil-sagar05',
+    linkedin: 'https://www.linkedin.com/in/sushil-sagar09/',
+    email: 'sagarsushil1403@gmail.com',
+    skills: ['RAG','LangChain','LangGraph','MCP','FastAPI','MERN'],
+    achievements: 'Open Source Contributor'
+  },
+  {
+    name: 'Prem Kishor',
+    role: 'Content Moderator & Maintainer ',
+    batch: '2023',
+    branch: 'CSE',
+    bio: 'Website Content Moderator & Maintainer focused on content management, moderation, and improving digital communities for students and developers.',
+    avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Amit',
+    github: 'https://github.com/the-thing-arch',
+    linkedin: 'https://linkedin.com',
+    email: 'kishorsupremo95@gmail.com',
+    skills: ['Full Stack', 'AI/ML'],
+  },
+  
 ];
 
 export default function AboutPage() {
@@ -128,9 +87,9 @@ export default function AboutPage() {
               We Are <span className="text-gradient">DevBuddies</span>
             </h1>
             <p className="text-[#a0a0a0] text-xl font-dosis leading-relaxed max-w-3xl">
-              Founded in 2021 at BP Mandal College of Engineering, Madhepura, we started as a small WhatsApp group 
-              of students who wanted to learn together. Today we&apos;re 500+ strong — with alumni at Google, Microsoft, 
-              Amazon, and top startups worldwide.
+              We are a newly launched developer community at BP Mandal College of Engineering, Madhepura. 
+              Starting from scratch, our goal is to build a vibrant tech ecosystem where students learn, build, 
+              and grow together from day one.
             </p>
           </motion.div>
         </div>
@@ -149,23 +108,23 @@ export default function AboutPage() {
               <p className="text-[#6a6a6a] text-lg font-dosis leading-relaxed mb-6">
                 To bridge the gap between academic curriculum and industry demands by creating a 
                 hands-on, collaborative environment where BPMCE students can build real skills, 
-                ship real products, and launch real careers.
+                ship real products, and kickstart their developer journey together.
               </p>
               <p className="text-[#6a6a6a] text-lg font-dosis leading-relaxed">
                 We believe that every student — regardless of branch, year, or background — 
-                deserves access to quality mentorship, structured learning, and a community 
-                that pushes them to be their best.
+                deserves access to quality peer mentorship, structured learning, and an encouraging 
+                community right from the start.
               </p>
             </div>
             <div className="space-y-4">
               {[
-                { year: '2021', event: 'Founded as a small Discord community' },
-                { year: '2022', event: 'First hackathon — 80 participants, 20 projects' },
-                { year: '2023', event: 'Launched structured roadmap program' },
-                { year: '2024', event: '500+ members, 15 GSoC selections, SIH national winner' },
+                { year: 'Phase 1', event: 'Official club launch & founding team onboarding' },
+                { year: 'Phase 2', event: 'Initiating structured roadmap study groups & workshops' },
+                { year: 'Phase 3', event: 'Building open-source projects & intra-college hackathons' },
+                { year: 'Phase 4', event: 'Scaling industry mentorship & placement/internship preparation' },
               ].map(({ year, event }) => (
                 <div key={year} className="flex items-start gap-4">
-                  <div className="font-mono text-[#FF6B00] text-sm font-bold w-12 flex-shrink-0">{year}</div>
+                  <div className="font-mono text-[#FF6B00] text-sm font-bold w-16 flex-shrink-0">{year}</div>
                   <div className="flex-1 border-l border-[#1f1f1f] pl-4 pb-4">
                     <p className="text-[#a0a0a0] font-dosis text-sm">{event}</p>
                   </div>
@@ -252,11 +211,13 @@ export default function AboutPage() {
                 </p>
 
                 {/* Branch & Batch Badge */}
-                <div className="mb-3">
-                  <span className="inline-block font-mono text-[10px] text-[#FF6B00] bg-[#FF6B00]/15 border border-[#FF6B00]/30 px-3 py-1 rounded-full uppercase font-bold backdrop-blur-md">
-                    {member.branch} • Batch &apos;{member.batch}
-                  </span>
-                </div>
+                {(member.branch || member.batch) && (
+                  <div className="mb-3">
+                    <span className="inline-block font-mono text-[10px] text-[#FF6B00] bg-[#FF6B00]/15 border border-[#FF6B00]/30 px-3 py-1 rounded-full uppercase font-bold backdrop-blur-md">
+                      {[member.branch, member.batch ? `Batch '${member.batch}` : null].filter(Boolean).join(' • ')}
+                    </span>
+                  </div>
+                )}
 
                 {/* Bio Excerpt */}
                 <p className="text-[#aaa] font-dosis text-sm leading-relaxed max-w-xs mb-4">

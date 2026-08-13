@@ -181,7 +181,6 @@ export default function Navbar() {
             <span className="font-display text-white text-lg font-bold block">
               Dev<span className="text-[#FF6B00]">Buddies</span>
             </span>
-            <span className="font-mono text-[9px] text-[#6a6a6a] tracking-[0.18em] uppercase">BPMCE Hub</span>
           </div>
         </Link>
 
