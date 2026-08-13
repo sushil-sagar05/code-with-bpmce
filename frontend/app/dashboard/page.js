@@ -574,6 +574,7 @@ export default function StudentDashboardPage() {
                           <option value="tech">Tech Tutorial</option>
                           <option value="career">Career / Interview Prep</option>
                           <option value="dsa">DSA &amp; Problem Solving</option>
+                          <option value="techno">Bytes</option>
                           <option value="web-dev">Web Development</option>
                           <option value="ai-ml">AI &amp; Machine Learning</option>
                           <option value="college">College &amp; Club News</option>
