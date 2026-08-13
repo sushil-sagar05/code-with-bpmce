@@ -1,31 +1,26 @@
-import axios from 'axios';
+﻿import axios from 'axios';
 
+// Use API base from env (production will typically be same origin)
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5001';
 
+// Send credentials (cookies) with requests so server-set httpOnly cookie is used for auth
 const api = axios.create({
   baseURL: `${API_BASE}/api`,
   headers: { 'Content-Type': 'application/json' },
+  withCredentials: true,
 });
 
-// Attach JWT token to every request
-api.interceptors.request.use((config) => {
-  if (typeof window !== 'undefined') {
-    const token = localStorage.getItem('cwb_token');
-    if (token) config.headers.Authorization = `Bearer ${token}`;
-  }
-  return config;
-});
-
-// Auto-logout on 401 (only if token existed or for protected user actions)
+// NOTE: switching to cookie-based auth. Do not attach Authorization header from localStorage anymore.
+// Auto-logout on 401: clear any stored user and redirect to login
 api.interceptors.response.use(
   (res) => res,
   (error) => {
     if (error.response?.status === 401 && typeof window !== 'undefined') {
-      const hasToken = !!localStorage.getItem('cwb_token');
-      localStorage.removeItem('cwb_token');
       localStorage.removeItem('cwb_user');
-      const isPublicRoute = ['/members', '/blogs', '/projects', '/achievements', '/leaderboard', '/events', '/resources', '/about', '/roadmaps'].some(p => window.location.pathname.startsWith(p));
-      if (hasToken && !isPublicRoute) {
+      // Expanded public routes list — include login and register to avoid redirect loops
+      const isPublicRoute = ['/members', '/blogs', '/projects', '/achievements', '/leaderboard', '/events', '/resources', '/about', '/roadmaps', '/login', '/register', '/'].some(p => window.location.pathname.startsWith(p));
+      if (!isPublicRoute && window.location.pathname !== '/login' && window.location.pathname !== '/register') {
+        // Prevent rapid redirect loops by only redirecting when not already on public auth pages
         window.location.href = '/login';
       }
     }
@@ -37,6 +32,7 @@ api.interceptors.response.use(
 export const authAPI = {
   login: (data) => api.post('/auth/login', data),
   register: (data) => api.post('/auth/register', data),
+  logout: () => api.post('/auth/logout'),
   me: () => api.get('/auth/me'),
 };
 
@@ -124,4 +120,3 @@ export const applicationsAPI = {
 };
 
 export default api;
-

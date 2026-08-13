@@ -8,54 +8,66 @@ const AuthContext = createContext(null);
 
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
-  const [token, setToken] = useState(null);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
 
-  // Restore session from localStorage (or cookies as fallback) on mount
+  // On mount, try to fetch current user from server using cookie-based auth (server-set httpOnly cookie)
   useEffect(() => {
-    const storedToken = localStorage.getItem('cwb_token');
-    const storedUser = localStorage.getItem('cwb_user');
-    if (storedToken && storedUser) {
+    let mounted = true;
+    (async () => {
       try {
-        setToken(storedToken);
-        setUser(JSON.parse(storedUser));
+        const { data } = await authAPI.me();
+        if (data?.success && mounted) {
+          setUser(data.user);
+          // persist user for UI across reloads (non-sensitive)
+          localStorage.setItem('cwb_user', JSON.stringify(data.user));
+        }
       } catch (_) {
-        localStorage.removeItem('cwb_token');
+        // clear stale client state
         localStorage.removeItem('cwb_user');
-        document.cookie = 'cwb_token=; path=/; max-age=0';
-        document.cookie = 'cwb_user=; path=/; max-age=0';
+        if (mounted) setUser(null);
+      } finally {
+        if (mounted) setLoading(false);
       }
-    }
-    setLoading(false);
+    })();
+    return () => { mounted = false; };
   }, []);
 
-  const persist = (token, user) => {
-    // localStorage for client reads
-    localStorage.setItem('cwb_token', token);
+  const persist = (user) => {
+    // Only persist user object client-side; token is managed via httpOnly cookie set by server
     localStorage.setItem('cwb_user', JSON.stringify(user));
-    // cookies for Edge middleware (30-day expiry, same-site lax)
-    const maxAge = 60 * 60 * 24 * 30;
-    document.cookie = `cwb_token=${token}; path=/; max-age=${maxAge}; SameSite=Lax`;
-    document.cookie = `cwb_user=${encodeURIComponent(JSON.stringify(user))}; path=/; max-age=${maxAge}; SameSite=Lax`;
-    setToken(token);
     setUser(user);
+  };
+
+  const waitForCookieSync = async (attempts = 5, delayMs = 250) => {
+    for (let i = 0; i < attempts; i++) {
+      try {
+        const res = await authAPI.me();
+        if (res?.data?.success) return res.data.user;
+      } catch (_) {}
+      // exponential backoff-ish
+      await new Promise((r) => setTimeout(r, delayMs * (i + 1)));
+    }
+    return null;
   };
 
   const login = useCallback(async (email, password) => {
     try {
       const { data } = await authAPI.login({ email, password });
       if (!data.success) throw new Error(data.message);
-      persist(data.token, data.user);
-      toast.success(`Welcome back, ${data.user.name.split(' ')[0]}! 🚀`);
+      // server sets httpOnly cookie; wait until server-set cookie is visible to backend by calling /me
+      const syncedUser = await waitForCookieSync();
+      const finalUser = syncedUser || data.user;
+      persist(finalUser);
+      toast.success(`Welcome back, ${finalUser.name.split(' ')[0]}! 🚀`);
       // Redirect based on role
-      const targetPath = data.user.role === 'admin' ? '/admin' : '/dashboard';
+      const targetPath = finalUser.role === 'admin' ? '/admin' : '/dashboard';
       try {
         router.replace(targetPath);
       } catch (_) {
         window.location.href = targetPath;
       }
-      return { success: true, user: data.user };
+      return { success: true, user: finalUser };
     } catch (err) {
       const msg = err.response?.data?.message || err.message || 'Login failed';
       toast.error(msg);
@@ -67,7 +79,10 @@ export function AuthProvider({ children }) {
     try {
       const { data } = await authAPI.register(formData);
       if (!data.success) throw new Error(data.message);
-      persist(data.token, data.user);
+      // server sets httpOnly cookie; wait until cookie is visible to backend by calling /me
+      const syncedUser = await waitForCookieSync();
+      const finalUser = syncedUser || data.user;
+      persist(finalUser);
       toast.success(`Account created! Welcome to CodeWithBPMCE 🎉`);
       router.push('/dashboard');
       return { success: true };
@@ -78,13 +93,17 @@ export function AuthProvider({ children }) {
     }
   }, [router]);
 
-  const logout = useCallback(() => {
-    localStorage.removeItem('cwb_token');
+  const logout = useCallback(async () => {
+    try {
+      // Tell server to clear httpOnly cookie, then clear client-side state
+      await authAPI.logout();
+    } catch (_) {
+      // ignore errors from logout call
+    }
     localStorage.removeItem('cwb_user');
-    // Clear cookies
+    // Clear any client cookies for fallback (best-effort)
     document.cookie = 'cwb_token=; path=/; max-age=0';
     document.cookie = 'cwb_user=; path=/; max-age=0';
-    setToken(null);
     setUser(null);
     toast.success('Logged out successfully');
     router.push('/');
@@ -98,18 +117,16 @@ export function AuthProvider({ children }) {
         setUser(updatedUser);
         // Sync localStorage
         localStorage.setItem('cwb_user', JSON.stringify(updatedUser));
-        // Sync cookie so middleware & navbar stay in sync
-        const maxAge = 60 * 60 * 24 * 30;
-        document.cookie = `cwb_user=${encodeURIComponent(JSON.stringify(updatedUser))}; path=/; max-age=${maxAge}; SameSite=Lax`;
+        // Server sets cwb_user cookie; no need to set it from client.
       }
     } catch (_) {}
   }, []);
 
   const isAdmin = user?.role === 'admin';
-  const isAuthenticated = !!user && !!token;
+  const isAuthenticated = !!user;
 
   return (
-    <AuthContext.Provider value={{ user, token, loading, isAdmin, isAuthenticated, login, register, logout, refreshUser }}>
+    <AuthContext.Provider value={{ user, loading, isAdmin, isAuthenticated, login, register, logout, refreshUser }}>
       {children}
     </AuthContext.Provider>
   );
