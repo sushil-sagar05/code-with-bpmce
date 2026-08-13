@@ -1,12 +1,13 @@
 'use client';
 import { useState } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { Code2, Mail, Lock, User, Eye, EyeOff, ArrowRight, AlertCircle } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 
 const branches = ['CSE', 'IT', 'ECE', 'EE', 'ME', 'CE','CSE(AI & ML)','3DAG', 'Other'];
-const years = ['2023','2024', '2025', '2026', '2027', '2028'];
+const years = ['2021','2022','2023','2024', '2025', '2026'];
 
 export default function RegisterPage() {
   const [show, setShow] = useState(false);
@@ -14,6 +15,7 @@ export default function RegisterPage() {
   const [error, setError] = useState('');
   const [form, setForm] = useState({ name: '', email: '', password: '', branch: '', batch: '' });
   const { register } = useAuth();
+  const router = useRouter(); // added: router to perform client-side navigation after successful register
   const update = (k, v) => setForm((f) => ({ ...f, [k]: v }));
 
   const handleSubmit = async (e) => {
@@ -25,8 +27,10 @@ export default function RegisterPage() {
     }
     setLoading(true);
     const result = await register(form);
-    if (!result.success) setError(result.message);
-    setLoading(false);
+    if (!result.success) {
+      setError(result.message);
+      setLoading(false);
+    }
   };
 
   return (

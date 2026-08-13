@@ -14,6 +14,15 @@ const getLeaderboard = async (req, res) => {
   }
 };
 
+const getUserCount = async (req, res) => {
+  try {
+    const count = await User.countDocuments();
+    res.json({ success: true, count });
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
+  }
+};
+
 const getUsers = async (req, res) => {
   try {
     const users = await User.find().select('-password').sort({ createdAt: -1 });
@@ -94,4 +103,4 @@ const deleteUser = async (req, res) => {
   }
 };
 
-module.exports = { getLeaderboard, getUsers, getUserById, updateUser, updateRole, deleteUser };
+module.exports = { getLeaderboard, getUserCount, getUsers, getUserById, updateUser, updateRole, deleteUser };
