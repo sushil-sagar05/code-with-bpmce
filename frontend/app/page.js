@@ -7,7 +7,7 @@ import EventsPreview from '@/components/sections/EventsPreview';
 import CommunityCTA from '@/components/sections/CommunityCTA';
 
 export const metadata = {
-  title: 'DevBuddies (CodeWithBPMCE) — Bihar\'s Premier Engineering Student Tech Community',
+  title: 'DevBuddies | Bihar\'s Premier Engineering Student Tech Community',
   description:
     'DevBuddies is the top student coding community & roadmap platform of BP Mandal College of Engineering (BPMCE), Madhepura. Learn coding, access resources, and follow AKU/BEU syllabus engineering roadmaps in Bihar.',
 };
