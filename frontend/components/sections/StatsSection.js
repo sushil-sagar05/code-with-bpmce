@@ -60,7 +60,7 @@ export default function StatsSection() {
 
   useEffect(() => {
     Promise.allSettled([
-      usersAPI.getLeaderboard(),
+      usersAPI.getCount(),
       projectsAPI.getAll(),
       achievementsAPI.getAll({ verified: true }),
       eventsAPI.getAll(),
@@ -71,7 +71,7 @@ export default function StatsSection() {
       const osCount = allAchievements.filter(a => (a.type || '').toUpperCase() === 'OPEN SOURCE' || (a.type || '').toUpperCase() === 'GSOC').length;
 
       setCounts({
-        members: usersRes.value?.data?.data?.length || 0,
+        members: usersRes.value?.data?.count || 0,
         projects: projectsRes.value?.data?.data?.length || 0,
         achievements: achievementsRes.value?.data?.data?.length || 0,
         events: eventsRes.value?.data?.data?.length || 0,
