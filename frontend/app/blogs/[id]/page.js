@@ -7,13 +7,17 @@ import { ArrowLeft, Clock, User, Eye, Heart, Calendar, Tag, Share2, PenTool, Ext
 import Link from 'next/link';
 import toast from 'react-hot-toast';
 
+import { useAuth } from '@/context/AuthContext';
+
 export default function BlogDetailPage() {
   const params = useParams();
   const router = useRouter();
+  const { user } = useAuth();
   const [blog, setBlog] = useState(null);
   const [loading, setLoading] = useState(true);
   const [liked, setLiked] = useState(false);
   const [likesCount, setLikesCount] = useState(0);
+  const [liking, setLiking] = useState(false);
 
   useEffect(() => {
     if (params?.id) {
@@ -23,7 +27,11 @@ export default function BlogDetailPage() {
           const article = data.data;
           if (article) {
             setBlog(article);
-            setLikesCount(Array.isArray(article.likes) ? article.likes.length : (article.likes || 0));
+            const likesArr = Array.isArray(article.likes) ? article.likes : [];
+            setLikesCount(likesArr.length);
+            if (user && likesArr.some(id => (id._id || id).toString() === (user._id || user.id).toString())) {
+              setLiked(true);
+            }
           } else {
             setBlog(null);
           }
@@ -33,16 +41,42 @@ export default function BlogDetailPage() {
         })
         .finally(() => setLoading(false));
     }
-  }, [params?.id]);
+  }, [params?.id, user]);
 
-  const handleLike = () => {
-    if (liked) {
-      setLikesCount(prev => prev - 1);
-      setLiked(false);
-    } else {
-      setLikesCount(prev => prev + 1);
-      setLiked(true);
-      toast.success('Liked blog post! ❤️');
+  const handleLike = async () => {
+    if (!user) {
+      toast.error('Please login to like this article!');
+      router.push('/login');
+      return;
+    }
+    if (liking) return;
+
+    // Optimistic UI Update
+    const prevLiked = liked;
+    const prevCount = likesCount;
+    setLiked(!prevLiked);
+    setLikesCount(prev => (prevLiked ? prev - 1 : prev + 1));
+    setLiking(true);
+
+    try {
+      const { data } = await blogsAPI.like(params.id);
+      if (data.success) {
+        setLikesCount(data.likes);
+        if (!prevLiked) {
+          toast.success('Liked blog post! ❤️');
+        }
+      } else {
+        // Rollback
+        setLiked(prevLiked);
+        setLikesCount(prevCount);
+      }
+    } catch (err) {
+      // Rollback
+      setLiked(prevLiked);
+      setLikesCount(prevCount);
+      toast.error('Failed to update like. Please try again.');
+    } finally {
+      setLiking(false);
     }
   };
 
@@ -76,9 +110,61 @@ export default function BlogDetailPage() {
 
   const tagsList = Array.isArray(blog.tags) ? blog.tags : (blog.tags ? blog.tags.split(',') : []);
 
+  const jsonLdBlog = blog
+    ? {
+        '@context': 'https://schema.org',
+        '@type': 'BlogPosting',
+        headline: blog.title,
+        description: blog.excerpt || blog.content?.slice(0, 150),
+        image: blog.coverImage || 'https://www.devbuddies.in/icon.svg',
+        author: {
+          '@type': 'Person',
+          name: blog.author?.name || 'DevBuddies Contributor',
+        },
+        publisher: {
+          '@type': 'Organization',
+          name: 'DevBuddies',
+          logo: {
+            '@type': 'ImageObject',
+            url: 'https://www.devbuddies.in/icon.svg',
+          },
+        },
+        datePublished: blog.createdAt || new Date().toISOString(),
+        dateModified: blog.updatedAt || blog.createdAt || new Date().toISOString(),
+        mainEntityOfPage: {
+          '@type': 'WebPage',
+          '@id': `https://www.devbuddies.in/blogs/${blog.slug || blog._id}`,
+        },
+      }
+    : null;
+
+  const jsonLdBreadcrumb = blog
+    ? {
+        '@context': 'https://schema.org',
+        '@type': 'BreadcrumbList',
+        itemListElement: [
+          { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://www.devbuddies.in' },
+          { '@type': 'ListItem', position: 2, name: 'Blogs', item: 'https://www.devbuddies.in/blogs' },
+          { '@type': 'ListItem', position: 3, name: blog.title, item: `https://www.devbuddies.in/blogs/${blog.slug || blog._id}` },
+        ],
+      }
+    : null;
+
   return (
-    <div className="min-h-screen bg-[#0a0a0a] pt-24 pb-16 grid-bg">
-      <div className="container-custom max-w-3xl mx-auto space-y-6">
+    <div className="min-h-screen bg-[#0a0a0a] pt-24 pb-20 grid-bg">
+      {jsonLdBlog && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLdBlog) }}
+        />
+      )}
+      {jsonLdBreadcrumb && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLdBreadcrumb) }}
+        />
+      )}
+      <div className="container-custom max-w-4xl mx-auto space-y-6">
         
         {/* Navigation & Header Actions */}
         <div className="flex items-center justify-between">

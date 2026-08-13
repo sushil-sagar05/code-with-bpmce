@@ -29,42 +29,123 @@ const lobsterTwo = Lobster_Two({
 });
 
 export const metadata = {
-  metadataBase: new URL('https://devbuddies.in'),
-  title: 'DevBuddies — Best Engineering Coding Club & Roadmap Hub in Bihar | BPMCE',
+  metadataBase: new URL('https://www.devbuddies.in'),
+  title: {
+    default: 'DevBuddies — Official Coding & Roadmap Platform | BPMCE & BEU Bihar',
+    template: '%s | DevBuddies BPMCE',
+  },
   description:
-    'DevBuddies is the official coding platform of BP Mandal College of Engineering, Madhepura. We provide the best engineering learning roadmaps, coding resources, and tech mentorship for AKU/BEU syllabus students in Bihar.',
+    'DevBuddies is the official coding club & technical platform of BP Mandal College of Engineering (BPMCE), Madhepura & Bihar Engineering University (BEU). Access curated engineering roadmaps, student projects, achievements, coding events, and resources in Bihar.',
   keywords: [
-    'DevBuddies', 'best coding club in Bihar', 'BPMCE coding platform', 
-    'BP Mandal College of Engineering', 'Bihar engineering college coding',
-    'BEU syllabus roadmaps', 'AKU Bihar coding resources', 'Madhepura programming club', 
-    'Bihar tech community', 'learn programming Bihar', 'engineering roadmaps Bihar',
-    'devbuddies.in'
+    'DevBuddies',
+    'DevBuddies BPMCE',
+    'BPMCE coding club',
+    'BPMCE programming community',
+    'BP Mandal College of Engineering',
+    'BEU coding community',
+    'Bihar Engineering University coding',
+    'coding community Bihar',
+    'coding resources for engineering students',
+    'DSA roadmaps BEU',
+    'Web Development roadmap Bihar',
+    'AI ML roadmap engineering',
+    'hackathons in Bihar',
+    'coding events Madhepura',
+    'BPMCE student projects',
+    'BPMCE student achievements',
   ],
+  alternates: {
+    canonical: 'https://www.devbuddies.in',
+  },
   icons: {
-    icon: [
-      { url: '/icon.svg', type: 'image/svg+xml' },
-    ],
+    icon: [{ url: '/icon.svg', type: 'image/svg+xml' }],
     shortcut: '/icon.svg',
     apple: '/icon.svg',
   },
   openGraph: {
-    title: 'DevBuddies — Best Engineering Coding Club & Roadmap Hub in Bihar',
-    description: 'Structured AKU/BEU engineering learning roadmaps, coding resources, and student community guidance in Bihar.',
-    url: 'https://devbuddies.in',
-    siteName: 'DevBuddies',
+    title: 'DevBuddies — Official Coding & Roadmap Platform | BPMCE & BEU Bihar',
+    description:
+      'The premier tech community of BP Mandal College of Engineering (BPMCE), Madhepura. Master Full-Stack, DSA, AI/ML with BEU-aligned roadmaps and student projects.',
+    url: 'https://www.devbuddies.in',
+    siteName: 'DevBuddies BPMCE',
+    images: [
+      {
+        url: '/icon.svg',
+        width: 800,
+        height: 600,
+        alt: 'DevBuddies BPMCE Coding Community',
+      },
+    ],
     type: 'website',
     locale: 'en_IN',
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'DevBuddies — Best Coding Club & Roadmap Hub in Bihar',
-    description: 'Bihar\'s premier engineering student tech community and roadmap platform.',
+    title: 'DevBuddies — Official Coding & Roadmap Platform | BPMCE & BEU Bihar',
+    description:
+      'Bihar\'s premier engineering student tech community, BEU-aligned learning roadmaps, and coding events at BPMCE Madhepura.',
+    images: ['/icon.svg'],
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-video-preview': -1,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+    },
   },
 };
 
 export default function RootLayout({ children }) {
+  const jsonLdOrg = {
+    '@context': 'https://schema.org',
+    '@type': 'EducationalOrganization',
+    name: 'DevBuddies',
+    alternateName: 'DevBuddies BPMCE',
+    url: 'https://www.devbuddies.in',
+    logo: 'https://www.devbuddies.in/icon.svg',
+    description:
+      'Official coding & developer community of BP Mandal College of Engineering (BPMCE), Madhepura, Bihar.',
+    parentOrganization: {
+      '@type': 'CollegeOrUniversity',
+      name: 'BP Mandal College of Engineering, Madhepura',
+      url: 'https://www.bpmce.ac.in',
+    },
+    address: {
+      '@type': 'PostalAddress',
+      addressLocality: 'Madhepura',
+      addressRegion: 'Bihar',
+      addressCountry: 'IN',
+    },
+  };
+
+  const jsonLdWebSite = {
+    '@context': 'https://schema.org',
+    '@type': 'WebSite',
+    name: 'DevBuddies',
+    url: 'https://www.devbuddies.in',
+    potentialAction: {
+      '@type': 'SearchAction',
+      target: 'https://www.devbuddies.in/roadmaps?search={search_term_string}',
+      'query-input': 'required name=search_term_string',
+    },
+  };
+
   return (
     <html lang="en" className={`${dosis.variable} ${jetbrainsMono.variable} ${lobsterTwo.variable}`}>
+      <head>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLdOrg) }}
+        />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLdWebSite) }}
+        />
+      </head>
       <body className="bg-[#0a0a0a] text-white font-sans antialiased overflow-x-hidden">
         <AuthProvider>
           <LenisProvider>

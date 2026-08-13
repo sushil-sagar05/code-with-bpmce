@@ -53,8 +53,53 @@ export default function EventsPage() {
     return filter === 'upcoming' ? isUpcoming : !isUpcoming;
   });
 
+  const jsonLdEvents = events.map((e) => ({
+    '@context': 'https://schema.org',
+    '@type': 'Event',
+    name: e.title,
+    description: e.description,
+    startDate: e.date,
+    endDate: e.endDate || e.date,
+    eventStatus: 'https://schema.org/EventScheduled',
+    eventAttendanceMode: e.venue?.toLowerCase().includes('online')
+      ? 'https://schema.org/OnlineEventAttendanceMode'
+      : 'https://schema.org/OfflineEventAttendanceMode',
+    location: {
+      '@type': 'Place',
+      name: e.venue || 'BPMCE Campus',
+      address: {
+        '@type': 'PostalAddress',
+        addressLocality: 'Madhepura',
+        addressRegion: 'Bihar',
+        addressCountry: 'IN',
+      },
+    },
+    organizer: {
+      '@type': 'Organization',
+      name: 'DevBuddies BPMCE',
+      url: 'https://www.devbuddies.in',
+    },
+  }));
+
+  const jsonLdBreadcrumb = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://www.devbuddies.in' },
+      { '@type': 'ListItem', position: 2, name: 'Events', item: 'https://www.devbuddies.in/events' },
+    ],
+  };
+
   return (
     <div className="pt-20">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLdEvents) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLdBreadcrumb) }}
+      />
       <section className="section-padding grid-bg">
         <div className="container-custom">
           <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }}>

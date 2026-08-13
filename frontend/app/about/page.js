@@ -70,8 +70,21 @@ const team = [
 ];
 
 export default function AboutPage() {
+  const jsonLdBreadcrumb = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://www.devbuddies.in' },
+      { '@type': 'ListItem', position: 2, name: 'About', item: 'https://www.devbuddies.in/about' },
+    ],
+  };
+
   return (
     <div className="pt-16 pb-0">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLdBreadcrumb) }}
+      />
       {/* Hero */}
       <section className="py-12 md:py-16 grid-bg relative">
         <div className="container-custom">
