@@ -33,6 +33,10 @@ export const metadata = {
   title: {
     default: 'DevBuddies — Official Coding & Roadmap Platform | BPMCE & BEU Bihar',
     template: '%s | DevBuddies BPMCE',
+
+    verification: {
+    google: 'rrIYk1Sve3VpUmVraRdIR5gcDvSKhtZL_AThqMD3TT0',
+  },
   },
   description:
     'DevBuddies is the official coding club & technical platform of BP Mandal College of Engineering (BPMCE), Madhepura & Bihar Engineering University (BEU). Access curated engineering roadmaps, student projects, achievements, coding events, and resources in Bihar.',
