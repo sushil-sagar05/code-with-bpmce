@@ -68,56 +68,18 @@ export function AuthProvider({ children }) {
       const finalUser = syncedUser || data.user;
       persist(finalUser);
       toast.success(`Welcome back, ${finalUser.name.split(' ')[0]}! 🚀`);
+      
       // Redirect based on role
       const targetPath = finalUser.role === 'admin' ? '/admin' : '/dashboard';
-      try {
-        const { data } = await authAPI.login({
-          email,
-          password,
-        });
 
-        if (!data.success) {
-          throw new Error(data.message || 'Login failed');
-        }
+      /*
+       * Use full browser navigation instead of router.replace().
+       *
+       * This makes sure Next.js middleware receives the
+       * newly-created authentication cookies.
+       */
+      window.location.href = targetPath;
 
-        // Save token + user first
-        persist(data.token, data.user);
-
-        toast.success(
-          `Welcome back, ${data.user.name.split(' ')[0]}!`
-        );
-
-        // Decide destination
-        const targetPath =
-          data.user.role === 'admin'
-            ? '/admin'
-            : '/dashboard';
-
-        /*
-         * Use full browser navigation instead of router.replace().
-         *
-         * This makes sure Next.js middleware receives the
-         * newly-created authentication cookies.
-         */
-        window.location.href = targetPath;
-
-        return {
-          success: true,
-          user: data.user,
-        };
-      } catch (err) {
-        const msg =
-          err.response?.data?.message ||
-          err.message ||
-          'Login failed';
-
-        toast.error(msg);
-
-        return {
-          success: false,
-          message: msg,
-        };
-      }
       return { success: true, user: finalUser };
     } catch (err) {
       const msg = err.response?.data?.message || err.message || 'Login failed';
@@ -135,7 +97,15 @@ export function AuthProvider({ children }) {
       const finalUser = syncedUser || data.user;
       persist(finalUser);
       toast.success(`Account created! Welcome to CodeWithBPMCE 🎉`);
-      router.push('/dashboard');
+      
+      /*
+       * Use full browser navigation instead of router.push().
+       *
+       * This makes sure Next.js middleware receives the
+       * newly-created authentication cookies.
+       */
+      window.location.href = '/dashboard';
+      
       return { success: true };
     } catch (err) {
       const msg = err.response?.data?.message || err.message || 'Registration failed';

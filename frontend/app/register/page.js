@@ -29,16 +29,8 @@ export default function RegisterPage() {
     const result = await register(form);
     if (!result.success) {
       setError(result.message);
-    } else {
-      // FIX: redirecting to dashboard after successful registration
-      // Previously users were sent to the login page; now navigate directly to dashboard
-      try {
-        router.replace('/dashboard');
-      } catch (_) {
-        window.location.href = '/dashboard';
-      }
+      setLoading(false);
     }
-    setLoading(false);
   };
 
   return (

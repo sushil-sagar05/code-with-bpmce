@@ -1,7 +1,10 @@
-﻿import axios from 'axios';
+import axios from 'axios';
 
-// Use API base from env (production will typically be same origin)
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5001';
+// Use API base from env (on server-side) or relative path (on client-side) to leverage Next.js rewrites/proxy
+const isServer = typeof window === 'undefined';
+const API_BASE = isServer 
+  ? (process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5001')
+  : '';
 
 // Send credentials (cookies) with requests so server-set httpOnly cookie is used for auth
 const api = axios.create({
