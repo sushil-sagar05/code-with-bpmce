@@ -1,6 +1,7 @@
 'use client';
 import { useState } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { Code2, Mail, Lock, User, Eye, EyeOff, ArrowRight, AlertCircle } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
@@ -14,6 +15,7 @@ export default function RegisterPage() {
   const [error, setError] = useState('');
   const [form, setForm] = useState({ name: '', email: '', password: '', branch: '', batch: '' });
   const { register } = useAuth();
+  const router = useRouter(); // added: router to perform client-side navigation after successful register
   const update = (k, v) => setForm((f) => ({ ...f, [k]: v }));
 
   const handleSubmit = async (e) => {
@@ -25,7 +27,17 @@ export default function RegisterPage() {
     }
     setLoading(true);
     const result = await register(form);
-    if (!result.success) setError(result.message);
+    if (!result.success) {
+      setError(result.message);
+    } else {
+      // FIX: redirecting to dashboard after successful registration
+      // Previously users were sent to the login page; now navigate directly to dashboard
+      try {
+        router.replace('/dashboard');
+      } catch (_) {
+        window.location.href = '/dashboard';
+      }
+    }
     setLoading(false);
   };
 
