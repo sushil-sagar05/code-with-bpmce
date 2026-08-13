@@ -16,6 +16,20 @@ const values = [
 ];
 
 const team = [
+  
+  {
+    name: 'SUJEET KUMAR',
+    role: 'Founder',
+    batch: '',
+    branch: 'Assistant Professor CSE',
+    //bio: 'Full-Stack Developer & Community Builder. Passionate about AI, Open Source, and scaling student dev communities.',
+    avatar: 'https://res.cloudinary.com/dz3yaj24a/image/upload/v1786593249/vishnu_sp3gnz.jpg',
+    github: 'https://github.com/SujeetNlp ',
+    //linkedin: 'https://www.linkedin.com/in/rajnishkuma/',
+    email: 'ksujeet.cs@gmail.com',
+    skills: [ 'AI/ML', 'NLP', 'Speech Processing', 'Machine Translation' ],
+    //achievements: 'GSoC Contributor • Hackfest Winner 2025'
+  },
   {
     name: 'Rajnish Maurya',
     role: 'Club President',

@@ -26,6 +26,7 @@ function ProjectCard({ project, index }) {
   const demo = project.demo || '#';
   const authorName = project.addedBy?.name || project.user?.name || project.author || 'Student';
   const category = project.category || 'Web Dev';
+  const color = categoryColors[category] || '#FF6B00';
 
   return (
     <motion.div
@@ -33,53 +34,67 @@ function ProjectCard({ project, index }) {
       initial={{ opacity: 0, y: 30 }}
       animate={isInView ? { opacity: 1, y: 0 } : {}}
       transition={{ delay: index * 0.1 }}
-      className="card-dark p-6 h-full flex flex-col group hover:border-[#FF6B00]/30 transition-all"
+      className="h-full"
     >
-      <div className="flex items-center justify-between mb-4">
-        <span
-          className="font-mono text-[9px] uppercase tracking-widest px-2.5 py-1 rounded-sm font-bold"
+      <div 
+        className="bg-[#0b0e17] border border-[#141a27] hover:border-[#FF6B00]/40 rounded-2xl p-6 h-full flex flex-col group transition-all duration-300 relative overflow-hidden shadow-lg hover:shadow-2xl z-10"
+        style={{ WebkitMaskImage: '-webkit-radial-gradient(white, black)' }}
+      >
+        {/* Top Glow Accent Gradient */}
+        <div
+          className="absolute -top-16 -right-16 w-36 h-36 pointer-events-none z-0 rounded-full transition-opacity duration-300"
           style={{
-            color: categoryColors[category] || '#FF6B00',
-            background: `${categoryColors[category] || '#FF6B00'}15`,
-            border: `1px solid ${categoryColors[category] || '#FF6B00'}30`,
+            background: `radial-gradient(circle, ${color} 0%, rgba(11, 14, 23, 0) 70%)`,
+            opacity: 0.2
           }}
-        >
-          {category}
-        </span>
-        <div className="flex items-center gap-1 text-[#6a6a6a] text-xs font-mono">
-          <Star className="w-3.5 h-3.5 text-[#FF6B00]" />
-          <span>Approved</span>
-        </div>
-      </div>
+        />
 
-      <h3 className="font-display text-xl font-bold text-white mb-3 group-hover:text-[#FF6B00] transition-colors">
-        {title}
-      </h3>
-      <p className="text-[#888] text-sm font-dosis leading-relaxed mb-5 flex-1 line-clamp-3">{desc}</p>
-
-      {tech.length > 0 && (
-        <div className="flex flex-wrap gap-1.5 mb-5">
-          {tech.map((t, idx) => (
-            <span key={idx} className="tag-pill text-[9px]">{t.trim()}</span>
-          ))}
+        <div className="flex items-center justify-between mb-4 z-10">
+          <span
+            className="font-mono text-[9px] uppercase tracking-widest px-2.5 py-1 rounded-md font-bold"
+            style={{
+              color: color,
+              background: `${color}15`,
+              border: `1px solid ${color}30`,
+            }}
+          >
+            {category}
+          </span>
+          <div className="flex items-center gap-1 text-[#6a6a6a] text-xs font-mono">
+            <Star className="w-3.5 h-3.5 text-[#FF6B00]" />
+            <span>Approved</span>
+          </div>
         </div>
-      )}
 
-      <div className="flex items-center justify-between border-t border-[#1f1f1f] pt-4 mt-auto">
-        <div className="text-[#666] text-xs font-mono truncate max-w-[140px]">
-          by {authorName}
-        </div>
-        <div className="flex items-center gap-2">
-          {github && github !== '#' && (
-            <a href={github} target="_blank" rel="noreferrer" className="text-[#6a6a6a] hover:text-white transition-colors" aria-label="GitHub">
-              <FaGithub className="w-4 h-4" />
-            </a>
-          )}
-          {demo && demo !== '#' && (
-            <a href={demo} target="_blank" rel="noreferrer" className="text-[#6a6a6a] hover:text-[#FF6B00] transition-colors" aria-label="Demo">
-              <ExternalLink className="w-4 h-4" />
-            </a>
-          )}
+        <h3 className="font-display text-xl font-bold text-white mb-3 group-hover:text-[#FF6B00] transition-colors z-10">
+          {title}
+        </h3>
+        <p className="text-[#888] text-sm font-dosis leading-relaxed mb-5 flex-1 line-clamp-3 z-10">{desc}</p>
+
+        {tech.length > 0 && (
+          <div className="flex flex-wrap gap-1.5 mb-5 z-10">
+            {tech.map((t, idx) => (
+              <span key={idx} className="tag-pill text-[9px]">{t.trim()}</span>
+            ))}
+          </div>
+        )}
+
+        <div className="flex items-center justify-between border-t border-[#1f1f1f] pt-4 mt-auto z-10">
+          <div className="text-[#666] text-xs font-mono truncate max-w-[140px]">
+            by {authorName}
+          </div>
+          <div className="flex items-center gap-2">
+            {github && github !== '#' && (
+              <a href={github} target="_blank" rel="noreferrer" className="text-[#6a6a6a] hover:text-white transition-colors" aria-label="GitHub">
+                <FaGithub className="w-4 h-4" />
+              </a>
+            )}
+            {demo && demo !== '#' && (
+              <a href={demo} target="_blank" rel="noreferrer" className="text-[#6a6a6a] hover:text-[#FF6B00] transition-colors" aria-label="Demo">
+                <ExternalLink className="w-4 h-4" />
+              </a>
+            )}
+          </div>
         </div>
       </div>
     </motion.div>

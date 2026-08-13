@@ -39,6 +39,7 @@ export const authAPI = {
 // ─── Users ──────────────────────────────────────────────────────────────────
 export const usersAPI = {
   getAll: (params) => api.get('/users', { params }),
+  getCount: () => api.get('/users/count'),
   getLeaderboard: () => api.get('/users/leaderboard'),
   getById: (id) => api.get(`/users/${id}`),
   update: (id, data) => api.put(`/users/${id}`, data),
