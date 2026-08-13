@@ -29,21 +29,36 @@ const lobsterTwo = Lobster_Two({
 });
 
 export const metadata = {
-  title: 'CodeWithBPMCE — Premier Coding Club | BP Mandal College of Engineering',
+  metadataBase: new URL('https://devbuddies.in'),
+  title: 'DevBuddies — Best Engineering Coding Club & Roadmap Hub in Bihar | BPMCE',
   description:
-    'CodeWithBPMCE is the official coding club of BP Mandal College of Engineering, Madhepura. Join us for roadmaps, hackathons, DSA, AI/ML, Web Dev and more.',
-  keywords: ['coding club', 'BPMCE', 'BP Mandal', 'Madhepura', 'programming', 'web development', 'DSA', 'hackathon'],
-  authors: [{ name: 'CodeWithBPMCE' }],
+    'DevBuddies is the official coding platform of BP Mandal College of Engineering, Madhepura. We provide the best engineering learning roadmaps, coding resources, and tech mentorship for AKU/BEU syllabus students in Bihar.',
+  keywords: [
+    'DevBuddies', 'best coding club in Bihar', 'BPMCE coding platform', 
+    'BP Mandal College of Engineering', 'Bihar engineering college coding',
+    'BEU syllabus roadmaps', 'AKU Bihar coding resources', 'Madhepura programming club', 
+    'Bihar tech community', 'learn programming Bihar', 'engineering roadmaps Bihar',
+    'devbuddies.in'
+  ],
+  icons: {
+    icon: [
+      { url: '/icon.svg', type: 'image/svg+xml' },
+    ],
+    shortcut: '/icon.svg',
+    apple: '/icon.svg',
+  },
   openGraph: {
-    title: 'CodeWithBPMCE — Premier Coding Club',
-    description: 'Learn. Build. Innovate. The official coding club of BPMCE, Madhepura.',
+    title: 'DevBuddies — Best Engineering Coding Club & Roadmap Hub in Bihar',
+    description: 'Structured AKU/BEU engineering learning roadmaps, coding resources, and student community guidance in Bihar.',
+    url: 'https://devbuddies.in',
+    siteName: 'DevBuddies',
     type: 'website',
     locale: 'en_IN',
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'CodeWithBPMCE',
-    description: 'Learn. Build. Innovate.',
+    title: 'DevBuddies — Best Coding Club & Roadmap Hub in Bihar',
+    description: 'Bihar\'s premier engineering student tech community and roadmap platform.',
   },
 };
 

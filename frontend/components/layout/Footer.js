@@ -52,12 +52,12 @@ export default function Footer() {
               </div>
               <div>
                 <span className="font-display text-white text-xl font-bold">
-                  Code<span className="text-[#FF6B00]">With</span>BPMCE
+                  Dev<span className="text-[#FF6B00]">Buddies</span>
                 </span>
               </div>
             </Link>
             <p className="text-[#6a6a6a] text-sm font-dosis leading-relaxed mb-6 max-w-xs">
-              The official coding club of BP Mandal College of Engineering, Madhepura. 
+              The official coding community of BP Mandal College of Engineering, Madhepura. 
               Building tomorrow's engineers, one commit at a time.
             </p>
             <div className="flex items-center gap-1.5 text-[#4a4a4a] text-xs mb-2">
@@ -111,7 +111,7 @@ export default function Footer() {
 
         <div className="flex flex-col md:flex-row items-center justify-between gap-4">
           <p className="text-[#4a4a4a] text-xs font-mono">
-            © 2024 CodeWithBPMCE. Built with ❤️ by BPMCE students.
+            © {new Date().getFullYear()} DevBuddies. Built with ❤️ by BPMCE students.
           </p>
           <div className="flex items-center gap-2">
             <div className="pulse-dot" />
