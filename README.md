@@ -1,4 +1,4 @@
-# 🚀 TechHub
+# 🚀 Devbuddies
 
 ### **Your Campus. Your Code. Your Technology.**
 
