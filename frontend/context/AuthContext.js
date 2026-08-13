@@ -1,5 +1,12 @@
 'use client';
-import { createContext, useContext, useState, useEffect, useCallback } from 'react';
+
+import {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  useCallback,
+} from 'react';
 import { useRouter } from 'next/navigation';
 import toast from 'react-hot-toast';
 import { authAPI } from '@/lib/api';
@@ -9,6 +16,7 @@ const AuthContext = createContext(null);
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
+
   const router = useRouter();
 
   // On mount, try to fetch current user from server using cookie-based auth (server-set httpOnly cookie)
@@ -63,9 +71,52 @@ export function AuthProvider({ children }) {
       // Redirect based on role
       const targetPath = finalUser.role === 'admin' ? '/admin' : '/dashboard';
       try {
-        router.replace(targetPath);
-      } catch (_) {
+        const { data } = await authAPI.login({
+          email,
+          password,
+        });
+
+        if (!data.success) {
+          throw new Error(data.message || 'Login failed');
+        }
+
+        // Save token + user first
+        persist(data.token, data.user);
+
+        toast.success(
+          `Welcome back, ${data.user.name.split(' ')[0]}!`
+        );
+
+        // Decide destination
+        const targetPath =
+          data.user.role === 'admin'
+            ? '/admin'
+            : '/dashboard';
+
+        /*
+         * Use full browser navigation instead of router.replace().
+         *
+         * This makes sure Next.js middleware receives the
+         * newly-created authentication cookies.
+         */
         window.location.href = targetPath;
+
+        return {
+          success: true,
+          user: data.user,
+        };
+      } catch (err) {
+        const msg =
+          err.response?.data?.message ||
+          err.message ||
+          'Login failed';
+
+        toast.error(msg);
+
+        return {
+          success: false,
+          message: msg,
+        };
       }
       return { success: true, user: finalUser };
     } catch (err) {
@@ -105,21 +156,28 @@ export function AuthProvider({ children }) {
     document.cookie = 'cwb_token=; path=/; max-age=0';
     document.cookie = 'cwb_user=; path=/; max-age=0';
     setUser(null);
+
     toast.success('Logged out successfully');
+
     router.push('/');
   }, [router]);
 
+  // Refresh current user
   const refreshUser = useCallback(async () => {
     try {
       const { data } = await authAPI.me();
+
       if (data.success) {
         const updatedUser = data.user;
+
         setUser(updatedUser);
         // Sync localStorage
         localStorage.setItem('cwb_user', JSON.stringify(updatedUser));
         // Server sets cwb_user cookie; no need to set it from client.
       }
-    } catch (_) {}
+    } catch (error) {
+      console.error('Failed to refresh user:', error);
+    }
   }, []);
 
   const isAdmin = user?.role === 'admin';
@@ -134,6 +192,12 @@ export function AuthProvider({ children }) {
 
 export function useAuth() {
   const ctx = useContext(AuthContext);
-  if (!ctx) throw new Error('useAuth must be used within AuthProvider');
+
+  if (!ctx) {
+    throw new Error(
+      'useAuth must be used within AuthProvider'
+    );
+  }
+
   return ctx;
 }

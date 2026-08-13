@@ -1,9 +1,10 @@
 const express = require('express');
 const router = express.Router();
-const { getUsers, getUserById, updateUser, updateRole, deleteUser, getLeaderboard } = require('../controllers/userController');
+const { getUsers, getUserById, updateUser, updateRole, deleteUser, getLeaderboard, getUserCount } = require('../controllers/userController');
 const { protect, admin } = require('../middleware/auth');
 
 router.get('/leaderboard', getLeaderboard);
+router.get('/count', getUserCount);
 router.get('/', protect, admin, getUsers);
 router.get('/:id', protect, getUserById);
 router.put('/:id', protect, updateUser);
