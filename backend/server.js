@@ -24,6 +24,9 @@ const applicationRoutes = require('./routes/applicationRoutes');
 connectDB();
 
 const app = express();
+// Trust first proxy when deployed behind a load balancer (e.g., Vercel / Cloudflare)
+// This ensures Express understands the request is secure (req.secure) and cookies with secure:true work correctly.
+app.set('trust proxy', 1);
 const server = http.createServer(app);
 
 const io = new Server(server, {
@@ -72,4 +75,5 @@ const PORT = process.env.PORT || 5001;
 server.listen(PORT, () => {
   console.log(`🚀 Server running on http://localhost:${PORT}`);
   console.log(`🌍 Environment: ${process.env.NODE_ENV}`);
+  console.log(`🔗 CLIENT_URL = ${process.env.CLIENT_URL || 'not set (using http://localhost:3000)'}`);
 });

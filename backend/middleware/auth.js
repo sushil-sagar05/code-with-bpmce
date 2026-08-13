@@ -3,9 +3,21 @@ const User = require('../models/User');
 
 const protect = async (req, res, next) => {
   let token;
+  // Check standard Authorization header first
   if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
     token = req.headers.authorization.split(' ')[1];
   }
+  // If no header token, fallback to cookie (useful when token is httpOnly cookie)
+  if (!token && req.headers.cookie) {
+    try {
+      const cookieHeader = req.headers.cookie;
+      const match = cookieHeader.split(';').map(c => c.trim()).find(c => c.startsWith('cwb_token='));
+      if (match) {
+        token = decodeURIComponent(match.split('=')[1]);
+      }
+    } catch (_) { /* ignore cookie parse errors */ }
+  }
+
   if (!token) return res.status(401).json({ success: false, message: 'Not authorized, no token' });
 
   try {

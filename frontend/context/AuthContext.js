@@ -15,66 +15,61 @@ const AuthContext = createContext(null);
 
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
-  const [token, setToken] = useState(null);
   const [loading, setLoading] = useState(true);
 
   const router = useRouter();
 
-  // Restore session from localStorage
+  // On mount, try to fetch current user from server using cookie-based auth (server-set httpOnly cookie)
   useEffect(() => {
-    try {
-      const storedToken = localStorage.getItem('cwb_token');
-      const storedUser = localStorage.getItem('cwb_user');
-
-      if (storedToken && storedUser) {
-        setToken(storedToken);
-        setUser(JSON.parse(storedUser));
+    let mounted = true;
+    (async () => {
+      try {
+        const { data } = await authAPI.me();
+        if (data?.success && mounted) {
+          setUser(data.user);
+          // persist user for UI across reloads (non-sensitive)
+          localStorage.setItem('cwb_user', JSON.stringify(data.user));
+        }
+      } catch (_) {
+        // clear stale client state
+        localStorage.removeItem('cwb_user');
+        if (mounted) setUser(null);
+      } finally {
+        if (mounted) setLoading(false);
       }
-    } catch (error) {
-      console.error('Failed to restore session:', error);
+    })();
+    return () => { mounted = false; };
+  }, []);
 
-      localStorage.removeItem('cwb_token');
-      localStorage.removeItem('cwb_user');
+  const persist = (user) => {
+    // Only persist user object client-side; token is managed via httpOnly cookie set by server
+    localStorage.setItem('cwb_user', JSON.stringify(user));
+    setUser(user);
+  };
 
-      document.cookie =
-        'cwb_token=; path=/; max-age=0; SameSite=Lax';
-
-      document.cookie =
-        'cwb_user=; path=/; max-age=0; SameSite=Lax';
-    } finally {
-      setLoading(false);
+  const waitForCookieSync = async (attempts = 5, delayMs = 250) => {
+    for (let i = 0; i < attempts; i++) {
+      try {
+        const res = await authAPI.me();
+        if (res?.data?.success) return res.data.user;
+      } catch (_) {}
+      // exponential backoff-ish
+      await new Promise((r) => setTimeout(r, delayMs * (i + 1)));
     }
-  }, []);
+    return null;
+  };
 
-  // Save authentication data
-  const persist = useCallback((authToken, authUser) => {
-    // LocalStorage
-    localStorage.setItem('cwb_token', authToken);
-    localStorage.setItem('cwb_user', JSON.stringify(authUser));
-
-    // Cookies for Next.js middleware
-    const maxAge = 60 * 60 * 24 * 30;
-
-    document.cookie =
-      `cwb_token=${encodeURIComponent(authToken)}; ` +
-      `path=/; ` +
-      `max-age=${maxAge}; ` +
-      `SameSite=Lax`;
-
-    document.cookie =
-      `cwb_user=${encodeURIComponent(JSON.stringify(authUser))}; ` +
-      `path=/; ` +
-      `max-age=${maxAge}; ` +
-      `SameSite=Lax`;
-
-    // React state
-    setToken(authToken);
-    setUser(authUser);
-  }, []);
-
-  // LOGIN
-  const login = useCallback(
-    async (email, password) => {
+  const login = useCallback(async (email, password) => {
+    try {
+      const { data } = await authAPI.login({ email, password });
+      if (!data.success) throw new Error(data.message);
+      // server sets httpOnly cookie; wait until server-set cookie is visible to backend by calling /me
+      const syncedUser = await waitForCookieSync();
+      const finalUser = syncedUser || data.user;
+      persist(finalUser);
+      toast.success(`Welcome back, ${finalUser.name.split(' ')[0]}! 🚀`);
+      // Redirect based on role
+      const targetPath = finalUser.role === 'admin' ? '/admin' : '/dashboard';
       try {
         const { data } = await authAPI.login({
           email,
@@ -123,72 +118,43 @@ export function AuthProvider({ children }) {
           message: msg,
         };
       }
-    },
-    [persist]
-  );
+      return { success: true, user: finalUser };
+    } catch (err) {
+      const msg = err.response?.data?.message || err.message || 'Login failed';
+      toast.error(msg);
+      return { success: false, message: msg };
+    }
+  }, [router]);
 
-  // REGISTER
-  const register = useCallback(
-    async (formData) => {
-      try {
-        const { data } = await authAPI.register(formData);
+  const register = useCallback(async (formData) => {
+    try {
+      const { data } = await authAPI.register(formData);
+      if (!data.success) throw new Error(data.message);
+      // server sets httpOnly cookie; wait until cookie is visible to backend by calling /me
+      const syncedUser = await waitForCookieSync();
+      const finalUser = syncedUser || data.user;
+      persist(finalUser);
+      toast.success(`Account created! Welcome to CodeWithBPMCE 🎉`);
+      router.push('/dashboard');
+      return { success: true };
+    } catch (err) {
+      const msg = err.response?.data?.message || err.message || 'Registration failed';
+      toast.error(msg);
+      return { success: false, message: msg };
+    }
+  }, [router]);
 
-        if (!data.success) {
-          throw new Error(
-            data.message || 'Registration failed'
-          );
-        }
-
-        /*
-         * IMPORTANT:
-         *
-         * Do NOT persist token/user here if your intended flow is:
-         *
-         * Register → Login → Dashboard
-         *
-         * Registration should only create the account.
-         */
-        toast.success(
-          'Account created successfully! Please login.'
-        );
-
-        router.replace('/login');
-
-        return {
-          success: true,
-        };
-      } catch (err) {
-        const msg =
-          err.response?.data?.message ||
-          err.message ||
-          'Registration failed';
-
-        toast.error(msg);
-
-        return {
-          success: false,
-          message: msg,
-        };
-      }
-    },
-    [router]
-  );
-
-  // LOGOUT
-  const logout = useCallback(() => {
-    // Remove localStorage
-    localStorage.removeItem('cwb_token');
+  const logout = useCallback(async () => {
+    try {
+      // Tell server to clear httpOnly cookie, then clear client-side state
+      await authAPI.logout();
+    } catch (_) {
+      // ignore errors from logout call
+    }
     localStorage.removeItem('cwb_user');
-
-    // Remove cookies
-    document.cookie =
-      'cwb_token=; path=/; max-age=0; SameSite=Lax';
-
-    document.cookie =
-      'cwb_user=; path=/; max-age=0; SameSite=Lax';
-
-    // Clear React state
-    setToken(null);
+    // Clear any client cookies for fallback (best-effort)
+    document.cookie = 'cwb_token=; path=/; max-age=0';
+    document.cookie = 'cwb_user=; path=/; max-age=0';
     setUser(null);
 
     toast.success('Logged out successfully');
@@ -205,23 +171,9 @@ export function AuthProvider({ children }) {
         const updatedUser = data.user;
 
         setUser(updatedUser);
-
-        // Update localStorage
-        localStorage.setItem(
-          'cwb_user',
-          JSON.stringify(updatedUser)
-        );
-
-        // Update cookie
-        const maxAge = 60 * 60 * 24 * 30;
-
-        document.cookie =
-          `cwb_user=${encodeURIComponent(
-            JSON.stringify(updatedUser)
-          )}; ` +
-          `path=/; ` +
-          `max-age=${maxAge}; ` +
-          `SameSite=Lax`;
+        // Sync localStorage
+        localStorage.setItem('cwb_user', JSON.stringify(updatedUser));
+        // Server sets cwb_user cookie; no need to set it from client.
       }
     } catch (error) {
       console.error('Failed to refresh user:', error);
@@ -229,24 +181,10 @@ export function AuthProvider({ children }) {
   }, []);
 
   const isAdmin = user?.role === 'admin';
-
-  const isAuthenticated =
-    !!user && !!token;
+  const isAuthenticated = !!user;
 
   return (
-    <AuthContext.Provider
-      value={{
-        user,
-        token,
-        loading,
-        isAdmin,
-        isAuthenticated,
-        login,
-        register,
-        logout,
-        refreshUser,
-      }}
-    >
+    <AuthContext.Provider value={{ user, loading, isAdmin, isAuthenticated, login, register, logout, refreshUser }}>
       {children}
     </AuthContext.Provider>
   );
