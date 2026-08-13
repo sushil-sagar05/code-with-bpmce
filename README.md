@@ -1,4 +1,4 @@
-# 🚀 Devbuddies
+# 🚀 DevBuddies
 
 ### **Your Campus. Your Code. Your Technology.**
 
@@ -14,17 +14,17 @@
 
 ## 📖 About The Project
 
-**Devbuddies** is a college-focused technology platform designed to bring the entire student tech ecosystem into one place.
+**DevBuddies** is a college-focused technology platform designed to bring the entire student tech ecosystem into one place.
 
 College students often have to search across multiple websites, social media platforms, college groups, and communities to find useful resources, coding contests, events, hackathons, internships, blogs, and learning materials.
 
-Devbuddies aims to solve this problem by providing a **single, organized, community-driven platform** where students can discover, learn, participate, and contribute.
+DevBuddies aims to solve this problem by providing a **single, organized, community-driven platform** where students can discover, learn, participate, and contribute.
 
 ### 🎯 Our Vision
 
 > **Make technology opportunities accessible to every college student from a single platform.**
 
-Whether you're writing your first line of code, preparing for placements, participating in hackathons, exploring open source, or organizing a technical event, Devbuddies is designed to help you find what you need.
+Whether you're writing your first line of code, preparing for placements, participating in hackathons, exploring open source, or organizing a technical event, DevBuddies is designed to help you find what you need.
 
 ---
 
@@ -52,7 +52,7 @@ Whether you're writing your first line of code, preparing for placements, partic
 
 ## 👨‍💻 Who Is It For?
 
-Devbuddies is built primarily for the college technology community.
+DevBuddies is built primarily for the college technology community.
 
 ### 🌱 Beginners
 
@@ -470,7 +470,7 @@ EMAIL_SERVICE_API_KEY=<YOUR_EMAIL_SERVICE_API_KEY>
 
 Contributions are welcome!
 
-Devbuddies is intended to be a community-driven project, and students, developers, designers, and technology enthusiasts can contribute in multiple ways.
+DevBuddies is intended to be a community-driven project, and students, developers, designers, and technology enthusiasts can contribute in multiple ways.
 
 ## How You Can Contribute
 
@@ -577,7 +577,7 @@ All submitted content should be accurate, relevant, and useful to the student co
 
 # 🗺️ Roadmap
 
-Devbuddies is continuously evolving.
+DevBuddies is continuously evolving.
 
 ### Phase 1 — Foundation
 
@@ -626,7 +626,7 @@ Devbuddies is continuously evolving.
 
 # 🌟 Community
 
-The long-term goal of Devbuddies is to build a strong technology community within colleges.
+The long-term goal of DevBuddies is to build a strong technology community within colleges.
 
 Students can:
 
@@ -744,7 +744,7 @@ Have an idea, suggestion, or want to contribute?
 
 # ⭐ Support the Project
 
-If you find Devbuddies useful:
+If you find DevBuddies useful:
 
 * ⭐ Star the repository
 * 🍴 Fork the project
@@ -761,7 +761,7 @@ Every contribution helps make the platform better for students.
 
 ### 🚀 Learn. Build. Compete. Collaborate. Grow.
 
-**Devbuddies — Everything Technology, All in One Place.**
+**DevBuddies — Everything Technology, All in One Place.**
 
 Made with ❤️ for the student developer community.
 
