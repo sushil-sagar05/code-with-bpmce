@@ -1,8 +1,24 @@
 const User = require('../models/User');
 const jwt = require('jsonwebtoken');
 
-const generateToken = (id) =>
-  jwt.sign({ id }, process.env.JWT_SECRET, { expiresIn: process.env.JWT_EXPIRE });
+// Generate JWT with a safe fallback for the expiresIn option.
+// Some environments may have JWT_EXPIRE unset or set to an invalid value
+// (causing: "expiresIn should be a number of seconds or string representing a timespan").
+// Coerce numeric strings to Number and default to '30d' when missing/invalid.
+const generateToken = (id) => {
+  const rawExpire = process.env.JWT_EXPIRE;
+  let expiresIn;
+  if (!rawExpire) {
+    expiresIn = '30d'; // default expiry if env var not provided
+  } else if (/^\d+$/.test(rawExpire.trim())) {
+    // purely numeric string -> treat as seconds (number)
+    expiresIn = Number(rawExpire.trim());
+  } else {
+    // leave as-is (e.g., '7d', '24h', '1h') - jwt.sign accepts strings like '7d'
+    expiresIn = rawExpire;
+  }
+  return jwt.sign({ id }, process.env.JWT_SECRET, { expiresIn });
+};
 
 // @desc    Register user
 // @route   POST /api/auth/register
