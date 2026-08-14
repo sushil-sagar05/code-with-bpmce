@@ -1,16 +1,120 @@
 'use client';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
-import { ArrowRight, Terminal, Zap, Users, Code2, Trophy, Sparkles, CheckCircle2, Copy, Check, Play, Flame } from 'lucide-react';
+import { ArrowRight, Terminal, Zap, Sparkles, CheckCircle2, Copy, Check, RotateCcw } from 'lucide-react';
+
+const CODE_TOKENS = [
+  // Line 1
+  [
+    { text: '// DevBuddies Engineering Hub', class: 'text-[#6A9955] italic' }
+  ],
+  // Line 2
+  [
+    { text: 'const ', class: 'text-[#569CD6]' },
+    { text: 'community ', class: 'text-[#9CDCFE]' },
+    { text: '= ', class: 'text-[#D4D4D4]' },
+    { text: 'new ', class: 'text-[#569CD6]' },
+    { text: 'DevBuddies', class: 'text-[#4EC9B0]' },
+    { text: '({', class: 'text-[#FFD700]' }
+  ],
+  // Line 3
+  [
+    { text: '  college: ', class: 'text-[#9CDCFE]' },
+    { text: "'BPMCE Madhepura'", class: 'text-[#CE9178]' },
+    { text: ',', class: 'text-[#D4D4D4]' }
+  ],
+  // Line 4
+  [
+    { text: '  tracks: ', class: 'text-[#9CDCFE]' },
+    { text: '[', class: 'text-[#DA70D6]' },
+    { text: "'FullStack'", class: 'text-[#CE9178]' },
+    { text: ', ', class: 'text-[#D4D4D4]' },
+    { text: "'DSA'", class: 'text-[#CE9178]' },
+    { text: ', ', class: 'text-[#D4D4D4]' },
+    { text: "'AI/ML'", class: 'text-[#CE9178]' },
+    { text: '],', class: 'text-[#DA70D6]' }
+  ],
+  // Line 5
+  [
+    { text: '  status: ', class: 'text-[#9CDCFE]' },
+    { text: "'Empowering Engineers'", class: 'text-[#CE9178]' }
+  ],
+  // Line 6
+  [
+    { text: '});', class: 'text-[#FFD700]' }
+  ],
+  // Line 7
+  [],
+  // Line 8
+  [
+    { text: 'await ', class: 'text-[#C586C0]' },
+    { text: 'community', class: 'text-[#9CDCFE]' },
+    { text: '.', class: 'text-[#D4D4D4]' },
+    { text: 'empowerEngineers', class: 'text-[#DCDCAA]' },
+    { text: '();', class: 'text-[#DA70D6]' }
+  ]
+];
+
+// Helper to calculate total line length for tokenized lines
+const GET_LINE_TEXT = (tokens) => tokens.map(t => t.text).join('');
 
 export default function HeroSection() {
   const [copied, setCopied] = useState(false);
+  const [lineIndex, setLineIndex] = useState(0);
+  const [charIndex, setCharIndex] = useState(0);
+  const [isTypingComplete, setIsTypingComplete] = useState(false);
+
+  const startTyping = () => {
+    setLineIndex(0);
+    setCharIndex(0);
+    setIsTypingComplete(false);
+  };
+
+  useEffect(() => {
+    if (lineIndex < CODE_TOKENS.length) {
+      const lineText = GET_LINE_TEXT(CODE_TOKENS[lineIndex]);
+      if (lineText.length === 0) {
+        setLineIndex(prev => prev + 1);
+        setCharIndex(0);
+        return;
+      }
+      if (charIndex < lineText.length) {
+        const timer = setTimeout(() => {
+          setCharIndex(prev => prev + 1);
+        }, 30);
+        return () => clearTimeout(timer);
+      } else {
+        const lineTimer = setTimeout(() => {
+          setLineIndex(prev => prev + 1);
+          setCharIndex(0);
+        }, 120);
+        return () => clearTimeout(lineTimer);
+      }
+    } else {
+      setIsTypingComplete(true);
+    }
+  }, [lineIndex, charIndex]);
 
   const handleCopyCommand = () => {
     navigator.clipboard.writeText('git clone https://github.com/bpmce/devbuddies.git');
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
+  };
+
+  // Helper to render typed tokens for a specific line
+  const renderLineTokens = (tokens, charCount) => {
+    let remainingChars = charCount;
+    return tokens.map((token, tIdx) => {
+      if (remainingChars <= 0) return null;
+      const textToRender = token.text.slice(0, remainingChars);
+      remainingChars -= token.text.length;
+      return (
+        <span key={tIdx} className={token.class}>
+          {textToRender}
+        </span>
+      );
+    });
   };
 
   return (
@@ -103,7 +207,7 @@ export default function HeroSection() {
               <div className="flex items-center gap-2 overflow-hidden">
                 <Terminal className="w-4 h-4 text-[#FF6B00] shrink-0" />
                 <span className="text-[#FF8C00] shrink-0">$</span>
-                <span className="truncate text-white">git clone https://github.com/bpmce/devbuddies.git</span>
+                <span className="truncate text-white">git clone https://github.com/rajnish032/code-with-bpmce</span>
               </div>
               <button
                 onClick={handleCopyCommand}
@@ -114,44 +218,11 @@ export default function HeroSection() {
               </button>
             </motion.div>
 
-            {/* Stats Bar */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.5 }}
-              className="grid grid-cols-3 gap-6 pt-6 border-t border-[#1f1f1f] w-full max-w-lg"
-            >
-              <div>
-                <div className="flex items-center gap-1.5">
-                  <Users className="w-4 h-4 text-[#FF6B00]" />
-                  <span className="text-xl sm:text-2xl font-bold text-white font-display">500+</span>
-                </div>
-                <p className="text-xs text-[#6a6a6a] font-medium mt-0.5">Active Developers</p>
-              </div>
-
-              <div>
-                <div className="flex items-center gap-1.5">
-                  <Code2 className="w-4 h-4 text-[#FF8C00]" />
-                  <span className="text-xl sm:text-2xl font-bold text-white font-display">80+</span>
-                </div>
-                <p className="text-xs text-[#6a6a6a] font-medium mt-0.5">Projects Shipped</p>
-              </div>
-
-              <div>
-                <div className="flex items-center gap-1.5">
-                  <Trophy className="w-4 h-4 text-[#FF6B00]" />
-                  <span className="text-xl sm:text-2xl font-bold text-white font-display">120+</span>
-                </div>
-                <p className="text-xs text-[#6a6a6a] font-medium mt-0.5">Verified Badges</p>
-              </div>
-            </motion.div>
-
           </div>
 
           {/* Right Column: Code Terminal & Visual Card */}
           <div className="lg:col-span-5 relative flex justify-center lg:justify-end">
             
-            {/* Floating Decorative Cards */}
             <motion.div
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
@@ -159,7 +230,7 @@ export default function HeroSection() {
               className="w-full max-w-md relative"
             >
               {/* Code Window Container */}
-              <div className="bg-[#111111] border border-[#1f1f1f] rounded-2xl shadow-2xl overflow-hidden relative z-10 hover:border-[#FF6B00]/40 transition-colors">
+              <div className="bg-[#111111] border border-[#1f1f1f] rounded-2xl shadow-2xl overflow-hidden relative z-10">
                 
                 {/* Header bar */}
                 <div className="bg-[#141414] px-4 py-3 border-b border-[#1f1f1f] flex items-center justify-between">
@@ -169,67 +240,55 @@ export default function HeroSection() {
                     <div className="w-3 h-3 rounded-full bg-[#30D158]" />
                     <span className="text-xs font-mono text-[#6a6a6a] ml-2">bpmce_dev.js</span>
                   </div>
-                  <div className="flex items-center gap-1 text-[11px] font-mono text-[#FF6B00] bg-[#FF6B00]/10 px-2 py-0.5 rounded border border-[#FF6B00]/20">
-                    <Play className="w-3 h-3 fill-current" /> Running
-                  </div>
+                  <button
+                    onClick={startTyping}
+                    className="flex items-center gap-1 text-[11px] font-mono text-[#a0a0a0] hover:text-[#FF6B00] bg-[#1a1a1a] hover:bg-[#222222] px-2 py-0.5 rounded border border-[#1f1f1f] transition-colors cursor-pointer"
+                    title="Re-type code"
+                  >
+                    <RotateCcw className="w-3 h-3" /> Re-type
+                  </button>
                 </div>
 
-                {/* Code body */}
-                <div className="p-5 font-mono text-xs sm:text-sm leading-relaxed text-[#f5f5f5] overflow-x-auto">
-                  <div className="text-[#6a6a6a] comment mb-2">// DevBuddies Engineering Hub</div>
-                  <div>
-                    <span className="text-[#FF6B00]">const</span> <span className="text-white">community</span> = <span className="text-[#FF6B00]">new</span> <span className="text-[#FF8C00]">DevBuddies</span>({'{'}
-                  </div>
-                  <div className="pl-4">
-                    <span className="text-[#a0a0a0]">college:</span> <span className="text-[#FFB347]">&apos;BPMCE Madhepura&apos;</span>,
-                  </div>
-                  <div className="pl-4">
-                    <span className="text-[#a0a0a0]">tracks:</span> [<span className="text-[#FFB347]">&apos;FullStack&apos;</span>, <span className="text-[#FFB347]">&apos;DSA&apos;</span>, <span className="text-[#FFB347]">&apos;AI/ML&apos;</span>],
-                  </div>
-                  <div className="pl-4">
-                    <span className="text-[#a0a0a0]">status:</span> <span className="text-[#FFB347]">&apos;Empowering Future Engineers&apos;</span>
-                  </div>
-                  <div>{'}'});</div>
-                  <br />
-                  <div>
-                    <span className="text-[#FF6B00]">await</span> <span className="text-white">community</span>.<span className="text-[#FF8C00]">empowerEngineers</span>();
-                  </div>
-                  <div className="mt-4 text-[#FF6B00] flex items-center gap-1.5 bg-[#FF6B00]/10 p-2 rounded border border-[#FF6B00]/20 text-xs">
-                    <CheckCircle2 className="w-4 h-4 shrink-0" />
-                    <span>Success: 500+ active members connected</span>
-                  </div>
+                {/* Code body - Typing Animation with VS Code Syntax Highlighting */}
+                <div className="p-5 font-mono text-xs sm:text-sm leading-relaxed overflow-x-auto min-h-[220px]">
+                  {CODE_TOKENS.map((tokens, idx) => {
+                    if (idx > lineIndex) return null;
+
+                    const isCurrentLine = idx === lineIndex;
+                    const maxCharsForLine = isCurrentLine ? charIndex : GET_LINE_TEXT(tokens).length;
+
+                    return (
+                      <div key={idx} className="min-h-[1.5rem] whitespace-pre flex items-center">
+                        {renderLineTokens(tokens, maxCharsForLine)}
+                        {isCurrentLine && (
+                          <span className="inline-block w-2 h-4 bg-[#FF6B00] ml-0.5 align-middle animate-pulse" />
+                        )}
+                      </div>
+                    );
+                  })}
+
+                  {/* Execution Badge when finished typing */}
+                  {isTypingComplete && (
+                    <motion.div
+                      initial={{ opacity: 0, y: 5 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      className="mt-4 text-[#FF6B00] flex items-center gap-1.5 bg-[#FF6B00]/10 p-2 rounded border border-[#FF6B00]/20 text-xs"
+                    >
+                      <CheckCircle2 className="w-4 h-4 shrink-0" />
+                      <span>Ready: 500+ active members connected</span>
+                    </motion.div>
+                  )}
                 </div>
               </div>
 
-              {/* Floating Badge 1: Top Right */}
-              <motion.div
-                animate={{ y: [0, -8, 0] }}
-                transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
-                className="absolute -top-5 -right-4 z-20 bg-[#111111]/95 border border-[#FF6B00]/30 backdrop-blur-md p-3.5 rounded-xl shadow-xl flex items-center gap-3"
-              >
-                <div className="w-10 h-10 rounded-lg bg-[#FF6B00]/15 flex items-center justify-center text-[#FF6B00]">
-                  <Flame className="w-5 h-5" />
-                </div>
-                <div>
-                  <div className="text-xs font-semibold text-white">Daily Leaderboard</div>
-                  <div className="text-[11px] text-[#a0a0a0]">Updated Live</div>
-                </div>
-              </motion.div>
-
-              {/* Floating Badge 2: Bottom Left */}
-              <motion.div
-                animate={{ y: [0, 8, 0] }}
-                transition={{ duration: 5, repeat: Infinity, ease: 'easeInOut', delay: 1 }}
-                className="absolute -bottom-6 -left-4 z-20 bg-[#111111]/95 border border-[#FF6B00]/30 backdrop-blur-md p-3.5 rounded-xl shadow-xl flex items-center gap-3"
-              >
-                <div className="w-10 h-10 rounded-lg bg-[#FF6B00]/15 flex items-center justify-center text-[#FF6B00]">
-                  <CheckCircle2 className="w-5 h-5" />
-                </div>
-                <div>
-                  <div className="text-xs font-semibold text-white">Curated Syllabus</div>
-                  <div className="text-[11px] text-[#a0a0a0]">AKU / BEU Aligned</div>
-                </div>
-              </motion.div>
+              {/* Clean integrated footer chip */}
+              <div className="mt-3 flex items-center justify-between text-[11px] font-mono text-[#a0a0a0] px-1">
+                <span className="flex items-center gap-1.5 text-emerald-400">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                  Typing Interactive Demo
+                </span>
+                <span className="text-[#6a6a6a]">BEU / AKU Aligned</span>
+              </div>
 
             </motion.div>
           </div>

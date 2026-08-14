@@ -6,8 +6,7 @@ const getLeaderboard = async (req, res) => {
   try {
     const users = await User.find()
       .select('name avatar branch batch points leetcode codeforces github role email')
-      .sort({ points: -1 })
-      .limit(50);
+      .sort({ points: -1 });
     res.json({ success: true, data: users });
   } catch (err) {
     res.status(500).json({ success: false, message: err.message });

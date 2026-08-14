@@ -2,15 +2,15 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { MessageSquare, Send, Mail, ExternalLink, Users, Calendar, PenTool, Award, FolderGit2 } from 'lucide-react';
-import { FaGithub, FaYoutube, FaTwitter } from 'react-icons/fa';
+import { FaGithub, FaYoutube, FaTwitter, FaWhatsapp } from 'react-icons/fa';
 import { usersAPI, eventsAPI, blogsAPI, projectsAPI } from '@/lib/api';
 import Link from 'next/link';
 
 const channels = [
   { icon: MessageSquare, name: 'Discord', desc: 'Main hub for discussions, help, events, and networking.', href: '#', label: 'Join Discord Server', color: '#5865F2' },
-  { icon: Send, name: 'Telegram', desc: 'Quick updates, announcements, and resource sharing.', href: '#', label: 'Join Telegram Group', color: '#2AABEE' },
-  { icon: FaGithub, name: 'GitHub Org', desc: 'Collaborate on club projects, contribute to open source.', href: 'https://github.com', label: 'View Organization', color: '#ffffff' },
-  { icon: FaYoutube, name: 'YouTube', desc: 'Workshop recordings, tutorials, and event highlights.', href: 'https://youtube.com', label: 'Subscribe Channel', color: '#ef4444' },
+  { icon: Send, name: 'Telegram', desc: 'Quick updates, announcements, and resource sharing.', href: 'https://t.me/+XchrqyZxLJFlZjU1', label: 'Join Telegram Channel', color: '#2AABEE' },
+  { icon: FaWhatsapp, name: 'WhatsApp', desc: 'Collaborate on club projects, contribute to open source.', href: 'https://chat.whatsapp.com/DYAhObF1A8g8JLfkaOWVbW?s=sh&p=a&ilr=0', label: 'View Organization', color: '#50C878' },
+  { icon: FaYoutube, name: 'YouTube', desc: 'Workshop recordings, tutorials, and event highlights.', href: '#', label: 'Subscribe Channel', color: '#ef4444' },
 ];
 
 export default function CommunityPage() {

@@ -3,7 +3,7 @@ import { useRef } from 'react';
 import Link from 'next/link';
 import { motion, useInView } from 'framer-motion';
 import { MessageSquare, ArrowRight, Users, Zap } from 'lucide-react';
-import { FaGithub } from 'react-icons/fa';
+import { FaGithub, FaWhatsapp } from 'react-icons/fa';
 
 const communityLinks = [
   {
@@ -16,13 +16,13 @@ const communityLinks = [
     label: 'Join Discord',
   },
   {
-    icon: FaGithub,
-    platform: 'GitHub Org',
-    desc: 'Collaborate on open source projects and contribute to our repos.',
-    count: '80+ repositories',
-    href: '#',
-    color: '#ffffff',
-    label: 'View GitHub',
+    icon: FaWhatsapp,
+    platform: 'WhatsApp',
+    desc: 'Join our Whatsapp Group for real-time help, events, and discussions',
+    count: '200+ members',
+    href: 'https://chat.whatsapp.com/DYAhObF1A8g8JLfkaOWVbW?s=sh&p=a&ilr=0',
+    color: '#50C878',
+    label: 'Join WhatsApp',
   },
 ];
 

@@ -90,7 +90,7 @@ export default function BlogsPage() {
                           <div className="flex items-center gap-2 text-[#4a4a4a] text-xs font-mono"><User className="w-3 h-3" />{filtered[0].author?.name || 'Author'}</div>
                           <div className="flex items-center gap-2 text-[#4a4a4a] text-xs font-mono"><Clock className="w-3 h-3" />{filtered[0].readTime || 5} min</div>
                           <div className="flex items-center gap-2 text-[#4a4a4a] text-xs font-mono"><Eye className="w-3 h-3" />{filtered[0].views || 1}</div>
-                          <div className="flex items-center gap-2 text-[#4a4a4a] text-xs font-mono"><Heart className="w-3 h-3 text-red-500" />{filtered[0].likes || 0}</div>
+                          <div className="flex items-center gap-2 text-[#4a4a4a] text-xs font-mono"><Heart className="w-3 h-3 text-red-500" />{Array.isArray(filtered[0].likes) ? filtered[0].likes.length : (filtered[0].likes || 0)}</div>
                         </div>
                       </div>
                       <div className="h-48 bg-gradient-to-br from-[#FF6B00]/10 to-transparent border border-[#1f1f1f] rounded-lg flex items-center justify-center">
@@ -129,7 +129,7 @@ export default function BlogsPage() {
                           <span className="text-[#4a4a4a] text-xs font-mono flex-1">{authorName}</span>
                           <div className="flex items-center gap-3 text-[#4a4a4a] text-xs font-mono">
                             <span className="flex items-center gap-1"><Clock className="w-3 h-3" />{blog.readTime || 5}m</span>
-                            <span className="flex items-center gap-1"><Heart className="w-3 h-3" />{blog.likes || 0}</span>
+                            <span className="flex items-center gap-1"><Heart className="w-3 h-3 text-red-500/70" />{Array.isArray(blog.likes) ? blog.likes.length : (blog.likes || 0)}</span>
                           </div>
                         </div>
                       </motion.div>

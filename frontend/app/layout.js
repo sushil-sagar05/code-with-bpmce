@@ -30,10 +30,20 @@ const lobsterTwo = Lobster_Two({
 });
 
 export const metadata = {
-  metadataBase: new URL('https://devbuddies.in'),
-  title: 'DevBuddies — Best Engineering Coding Club & Roadmap Hub in Bihar | BPMCE',
+  metadataBase: new URL('https://www.devbuddies.in'),
+
+  title: {
+    default: 'DevBuddies — Official Coding & Roadmap Platform | BPMCE & BEU Bihar',
+    template: '%s | DevBuddies BPMCE',
+  },
+
+  verification: {
+    google: 'rrIYk1Sve3VpUmVraRdIR5gcDvSKhtZL_AThqMD3TT0',
+  },
+
   description:
-    'DevBuddies is the official coding platform of BP Mandal College of Engineering, Madhepura. We provide the best engineering learning roadmaps, coding resources, and tech mentorship for AKU/BEU syllabus students in Bihar.',
+    'DevBuddies is the official coding club & technical platform of BP Mandal College of Engineering (BPMCE), Madhepura & Bihar Engineering University (BEU). Access curated engineering roadmaps, student projects, achievements, coding events, and resources in Bihar.',
+
   keywords: [
     'DevBuddies',
     'best coding club in Bihar',
@@ -48,11 +58,17 @@ export const metadata = {
     'engineering roadmaps Bihar',
     'devbuddies.in',
   ],
+
+  alternates: {
+    canonical: 'https://www.devbuddies.in',
+  },
+
   icons: {
     icon: [{ url: '/icon.svg', type: 'image/svg+xml' }],
     shortcut: '/icon.svg',
     apple: '/icon.svg',
   },
+
   openGraph: {
     title: 'DevBuddies — Best Engineering Coding Club & Roadmap Hub in Bihar',
     description:
@@ -62,6 +78,7 @@ export const metadata = {
     type: 'website',
     locale: 'en_IN',
   },
+
   twitter: {
     card: 'summary_large_image',
     title: 'DevBuddies — Best Coding Club & Roadmap Hub in Bihar',
@@ -71,6 +88,40 @@ export const metadata = {
 };
 
 export default function RootLayout({ children }) {
+  const jsonLdOrg = {
+    '@context': 'https://schema.org',
+    '@type': 'EducationalOrganization',
+    name: 'DevBuddies',
+    alternateName: 'DevBuddies BPMCE',
+    url: 'https://www.devbuddies.in',
+    logo: 'https://www.devbuddies.in/icon.svg',
+    description:
+      'Official coding & developer community of BP Mandal College of Engineering (BPMCE), Madhepura, Bihar.',
+    parentOrganization: {
+      '@type': 'CollegeOrUniversity',
+      name: 'BP Mandal College of Engineering, Madhepura',
+      url: 'https://www.bpmce.ac.in',
+    },
+    address: {
+      '@type': 'PostalAddress',
+      addressLocality: 'Madhepura',
+      addressRegion: 'Bihar',
+      addressCountry: 'IN',
+    },
+  };
+
+  const jsonLdWebSite = {
+    '@context': 'https://schema.org',
+    '@type': 'WebSite',
+    name: 'DevBuddies',
+    url: 'https://www.devbuddies.in',
+    potentialAction: {
+      '@type': 'SearchAction',
+      target: 'https://www.devbuddies.in/roadmaps?search={search_term_string}',
+      'query-input': 'required name=search_term_string',
+    },
+  };
+
   return (
     <html
       lang="en"

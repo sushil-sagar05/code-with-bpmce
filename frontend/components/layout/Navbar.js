@@ -8,26 +8,26 @@ import { useAuth } from '@/context/AuthContext';
 
 const navLinks = [
   { label: 'About', href: '/about' },
-  { label: 'Club Members', href: '/members' },
-  {
-    label: 'Learn',
-    href: '#',
-    children: [
-      { label: 'Roadmaps', href: '/roadmaps' },
-      { label: 'Resources', href: '/resources' },
-    ],
-  },
+  { label: 'Roadmaps', href: '/roadmaps' },
+  { label: 'Projects', href: '/projects' },
   {
     label: 'Community',
     href: '#',
     children: [
-      { label: 'Projects', href: '/projects' },
-      { label: 'Achievements', href: '/achievements' },
-      { label: 'Leaderboard', href: '/leaderboard' },
+      { label: 'Members', href: '/members' },
       { label: 'Community', href: '/community' },
+      { label: 'Events', href: '/events' },
     ],
   },
-  { label: 'Events', href: '/events' },
+  {
+    label: 'Explore',
+    href: '#',
+    children: [
+      { label: 'Leaderboard', href: '/leaderboard' },
+      { label: 'Resources', href: '/resources' },
+      { label: 'Achievements', href: '/achievements' },
+    ],
+  },
   { label: 'Blogs', href: '/blogs' },
 ];
 
@@ -181,7 +181,6 @@ export default function Navbar() {
             <span className="font-display text-white text-lg font-bold block">
               Dev<span className="text-[#FF6B00]">Buddies</span>
             </span>
-            <span className="font-mono text-[9px] text-[#6a6a6a] tracking-[0.18em] uppercase">BPMCE Hub</span>
           </div>
         </Link>
 
