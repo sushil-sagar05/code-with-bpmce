@@ -2,7 +2,7 @@ import axios from 'axios';
 
 // Use API base from env (on server-side) or relative path (on client-side) to leverage Next.js rewrites/proxy
 const isServer = typeof window === 'undefined';
-const API_BASE = isServer 
+const API_BASE = isServer
   ? (process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5001')
   : '';
 
@@ -20,13 +20,33 @@ api.interceptors.response.use(
   (error) => {
     if (error.response?.status === 401 && typeof window !== 'undefined') {
       localStorage.removeItem('cwb_user');
+
       // Expanded public routes list — include login and register to avoid redirect loops
-      const isPublicRoute = ['/members', '/blogs', '/projects', '/achievements', '/leaderboard', '/events', '/resources', '/about', '/roadmaps', '/login', '/register', '/'].some(p => window.location.pathname.startsWith(p));
-      if (!isPublicRoute && window.location.pathname !== '/login' && window.location.pathname !== '/register') {
+      const isPublicRoute = [
+        '/members',
+        '/blogs',
+        '/projects',
+        '/achievements',
+        '/leaderboard',
+        '/events',
+        '/resources',
+        '/about',
+        '/roadmaps',
+        '/login',
+        '/register',
+        '/',
+      ].some((p) => window.location.pathname.startsWith(p));
+
+      if (
+        !isPublicRoute &&
+        window.location.pathname !== '/login' &&
+        window.location.pathname !== '/register'
+      ) {
         // Prevent rapid redirect loops by only redirecting when not already on public auth pages
         window.location.href = '/login';
       }
     }
+
     return Promise.reject(error);
   }
 );
@@ -35,6 +55,10 @@ api.interceptors.response.use(
 export const authAPI = {
   login: (data) => api.post('/auth/login', data),
   register: (data) => api.post('/auth/register', data),
+
+  // Google OAuth / Google Identity Services
+  googleLogin: (data) => api.post('/auth/google', data),
+
   logout: () => api.post('/auth/logout'),
   me: () => api.get('/auth/me'),
 };
@@ -73,7 +97,7 @@ export const blogsAPI = {
 export const achievementsAPI = {
   getAll: (params) => api.get('/achievements', { params }),
   getById: (id) => api.get(`/achievements/${id}`),
-  create: (data) => api.post('/achievements', data),
+  create: (id) => api.post('/achievements', id),
   verify: (id) => api.put(`/achievements/${id}/verify`),
   reject: (id) => api.delete(`/achievements/${id}`),
 };
@@ -86,7 +110,7 @@ export const projectsAPI = {
   delete: (id) => api.delete(`/projects/${id}`),
 };
 
-// ─── Resources ───────────────────────────────────────────────────────────────
+// ─── Resources ──────────────────────────────────────────────────────────────
 export const resourcesAPI = {
   getAll: (params) => api.get('/resources', { params }),
   create: (data) => api.post('/resources', data),
@@ -108,6 +132,7 @@ export const uploadAPI = {
   uploadImage: (file) => {
     const formData = new FormData();
     formData.append('image', file);
+
     return api.post('/upload', formData, {
       headers: { 'Content-Type': 'multipart/form-data' },
     });
@@ -119,7 +144,8 @@ export const applicationsAPI = {
   create: (data) => api.post('/applications', data),
   getMyApplication: () => api.get('/applications/my-application'),
   getAll: (params) => api.get('/applications', { params }),
-  updateStatus: (id, status) => api.put(`/applications/${id}/status`, { status }),
+  updateStatus: (id, status) =>
+    api.put(`/applications/${id}/status`, { status }),
   delete: (id) => api.delete(`/applications/${id}`),
 };
 
