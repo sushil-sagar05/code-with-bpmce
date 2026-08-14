@@ -98,4 +98,85 @@ const logout = async (req, res) => {
   }
 };
 
-module.exports = { register, login, getMe, logout };
+const googleAuth = async (req, res) => {
+  try {
+    const { idToken, branch, batch } = req.body;
+    if (!idToken) {
+      return res.status(400).json({ success: false, message: 'Google ID Token is required' });
+    }
+
+    // Verify token with Google's tokeninfo API
+    const response = await fetch(`https://oauth2.googleapis.com/tokeninfo?id_token=${idToken}`);
+    if (!response.ok) {
+      return res.status(400).json({ success: false, message: 'Invalid Google ID Token' });
+    }
+
+    const payload = await response.json();
+
+    // Verify client ID (audience) matches
+    const googleClientId = process.env.GOOGLE_CLIENT_ID;
+    if (!googleClientId) {
+      console.error('GOOGLE_CLIENT_ID environment variable is not set on the backend');
+      return res.status(500).json({ success: false, message: 'Google Authentication is not configured on the server' });
+    }
+
+    if (payload.aud !== googleClientId) {
+      return res.status(400).json({ success: false, message: 'Google ID Token audience mismatch' });
+    }
+
+    const { email, name, picture, sub: googleId } = payload;
+
+    // Find user by email or by googleId
+    let user = await User.findOne({ $or: [{ email }, { googleId }] });
+
+    if (user) {
+      // User exists, check if they don't have googleId yet (e.g. they registered via email/password previously)
+      let updated = false;
+      if (!user.googleId) {
+        user.googleId = googleId;
+        updated = true;
+      }
+      // Set verified if not already verified
+      if (!user.isVerified) {
+        user.isVerified = true;
+        updated = true;
+      }
+      // Update avatar if they don't have one
+      if (!user.avatar && picture) {
+        user.avatar = picture;
+        updated = true;
+      }
+      if (updated) {
+        await user.save();
+      }
+    } else {
+      // User does not exist, create new user
+      user = await User.create({
+        name,
+        email,
+        googleId,
+        avatar: picture || '',
+        branch: branch || '',
+        batch: batch || '',
+        isVerified: true, // Google accounts are pre-verified
+      });
+    }
+
+    const token = generateToken(user._id);
+    const cookieOptions = buildCookieOptions(req);
+    const safeUser = { ...user.toObject(), password: undefined };
+
+    res.cookie('cwb_token', token, { ...cookieOptions, httpOnly: true });
+    res.cookie('cwb_user', encodeURIComponent(JSON.stringify(safeUser)), { ...cookieOptions, httpOnly: false });
+
+    res.setHeader('Access-Control-Allow-Credentials', 'true');
+
+    return res.status(200).json({ success: true, user: safeUser, cookieAttempted: true });
+
+  } catch (err) {
+    console.error('Google Auth Error:', err);
+    return res.status(500).json({ success: false, message: err.message });
+  }
+};
+
+module.exports = { register, login, getMe, logout, googleAuth };
