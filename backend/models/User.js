@@ -37,6 +37,13 @@ const userSchema = new mongoose.Schema(
     points: { type: Number, default: 0 },
     rank: { type: Number, default: 0 },
     isVerified: { type: Boolean, default: false },
+    verificationOTP: {type: String,default: null,select: false},
+
+    verificationOTPExpire: {type: Date,default: null,select: false},
+
+    resetPasswordToken: {type: String,default: null,select: false},
+
+    resetPasswordExpire: {type: Date,default: null,select: false},
     achievements: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Achievement' }],
     projects: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Project' }],
   },

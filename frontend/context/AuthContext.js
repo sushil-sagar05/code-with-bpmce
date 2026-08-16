@@ -100,10 +100,23 @@ export function AuthProvider({ children }) {
 
         return { success: true, user: finalUser };
       } catch (err) {
+        const status = err.response?.status;
         const msg =
           err.response?.data?.message ||
           err.message ||
           'Login failed';
+
+        // Handle 403 — email not verified
+        if (status === 403) {
+          toast.error(msg);
+          return { success: false, message: msg, unverified: true, email };
+        }
+
+        // Handle 429 — rate-limit
+        if (status === 429) {
+          toast.error('Too many attempts. Please try again later.');
+          return { success: false, message: 'Too many attempts. Please try again later.' };
+        }
 
         toast.error(msg);
 
@@ -120,30 +133,25 @@ export function AuthProvider({ children }) {
 
         if (!data.success) throw new Error(data.message);
 
-        // server sets httpOnly cookie; wait until cookie is visible to backend by calling /me
-        const syncedUser = await waitForCookieSync();
-        const finalUser = syncedUser || data.user;
-
-        persist(finalUser);
-
-        toast.success(
-          `Account created! Welcome to CodeWithBPMCE 🎉`
-        );
-
         /*
-         * Use full browser navigation instead of router.push().
-         *
-         * This makes sure Next.js middleware receives the
-         * newly-created authentication cookies.
+         * Backend now sends a verification OTP email instead of
+         * logging the user in. Return success + email so the
+         * register page can redirect to the verify-email screen.
          */
-        window.location.href = '/dashboard';
+        toast.success(data.message || 'Verification code sent to your email');
 
-        return { success: true };
+        return { success: true, email: formData.email };
       } catch (err) {
         const msg =
           err.response?.data?.message ||
           err.message ||
           'Registration failed';
+
+        // Handle rate-limit
+        if (err.response?.status === 429) {
+          toast.error('Too many attempts. Please try again later.');
+          return { success: false, message: 'Too many attempts. Please try again later.' };
+        }
 
         toast.error(msg);
 

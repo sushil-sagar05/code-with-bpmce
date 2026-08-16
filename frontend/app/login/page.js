@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import {
@@ -20,8 +21,10 @@ export default function LoginPage() {
   const [googleLoading, setGoogleLoading] = useState(false);
   const [error, setError] = useState('');
   const [form, setForm] = useState({ email: '', password: '' });
+  const [unverified, setUnverified] = useState(false);
 
   const { login, googleLogin } = useAuth();
+  const router = useRouter();
 
   const googleButtonRef = useRef(null);
 
@@ -104,12 +107,16 @@ export default function LoginPage() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
+    setUnverified(false);
     setLoading(true);
 
     const result = await login(form.email, form.password);
 
     if (!result.success) {
       setError(result.message);
+      if (result.unverified) {
+        setUnverified(true);
+      }
       setLoading(false);
     }
   };
@@ -141,12 +148,24 @@ export default function LoginPage() {
 
         <div className="card-dark p-8">
           {error && (
-            <div className="flex items-center gap-2 bg-red-500/10 border border-red-500/30 rounded p-3 mb-5">
-              <AlertCircle className="w-4 h-4 text-red-400 flex-shrink-0" />
+            <div className="flex flex-col gap-2 bg-red-500/10 border border-red-500/30 rounded p-3 mb-5">
+              <div className="flex items-center gap-2">
+                <AlertCircle className="w-4 h-4 text-red-400 flex-shrink-0" />
 
-              <p className="text-red-400 text-sm font-dosis">
-                {error}
-              </p>
+                <p className="text-red-400 text-sm font-dosis">
+                  {error}
+                </p>
+              </div>
+
+              {unverified && (
+                <button
+                  type="button"
+                  onClick={() => router.push(`/verify-email?email=${encodeURIComponent(form.email)}`)}
+                  className="text-[#FF6B00] text-xs font-dosis font-semibold hover:underline text-left ml-6"
+                >
+                  Verify your email →
+                </button>
+              )}
             </div>
           )}
 
@@ -213,6 +232,13 @@ export default function LoginPage() {
                 <label className="text-[#a0a0a0] font-dosis text-xs font-semibold uppercase tracking-wide">
                   Password
                 </label>
+
+                <Link
+                  href="/forgot-password"
+                  className="text-[#FF6B00] text-xs font-dosis font-semibold hover:underline"
+                >
+                  Forgot password?
+                </Link>
               </div>
 
               <div className="relative">

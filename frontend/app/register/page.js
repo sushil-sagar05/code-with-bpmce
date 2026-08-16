@@ -1,13 +1,41 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
-import { Code2, Mail, Lock, User, Eye, EyeOff, ArrowRight, AlertCircle } from 'lucide-react';
+import {
+  Code2,
+  Mail,
+  Lock,
+  User,
+  Eye,
+  EyeOff,
+  ArrowRight,
+  AlertCircle,
+} from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 
-const branches = ['CSE', 'IT', 'ECE', 'EE', 'ME', 'CE', 'CSE(AI & ML)', '3DAG', 'Other'];
-const years = ['2021', '2022', '2023', '2024', '2025', '2026'];
+const branches = [
+  'CSE',
+  'IT',
+  'ECE',
+  'EE',
+  'ME',
+  'CE',
+  'CSE(AI & ML)',
+  '3DAG',
+  'Other',
+];
+
+const years = [
+  '2021',
+  '2022',
+  '2023',
+  '2024',
+  '2025',
+  '2026',
+];
 
 export default function RegisterPage() {
   const [show, setShow] = useState(false);
@@ -24,16 +52,21 @@ export default function RegisterPage() {
   });
 
   const { register, googleLogin } = useAuth();
+  const router = useRouter();
 
   const googleButtonRef = useRef(null);
 
-  const update = (k, v) =>
-    setForm((f) => ({
-      ...f,
-      [k]: v,
+  const update = (key, value) => {
+    setForm((current) => ({
+      ...current,
+      [key]: value,
     }));
+  };
 
-  // Initialize Google Identity Services
+  // ---------------------------------------------------------------------------
+  // Google Identity Services
+  // ---------------------------------------------------------------------------
+
   useEffect(() => {
     let intervalId;
 
@@ -47,12 +80,18 @@ export default function RegisterPage() {
         return false;
       }
 
-      const clientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID;
+      const clientId =
+        process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID;
 
       if (!clientId) {
         console.error(
           'NEXT_PUBLIC_GOOGLE_CLIENT_ID is not configured'
         );
+
+        setError(
+          'Google authentication is not configured'
+        );
+
         return true;
       }
 
@@ -68,14 +107,33 @@ export default function RegisterPage() {
           setError('');
           setGoogleLoading(true);
 
-          const result = await googleLogin(
-            response.credential,
-            form.branch,
-            form.batch
-          );
+          try {
+            const result = await googleLogin(
+              response.credential,
+              form.branch,
+              form.batch
+            );
 
-          if (!result.success) {
-            setError(result.message);
+            if (!result?.success) {
+              setError(
+                result?.message ||
+                  'Google authentication failed'
+              );
+
+              setGoogleLoading(false);
+            }
+          } catch (err) {
+            console.error(
+              'Google registration error:',
+              err
+            );
+
+            setError(
+              err?.response?.data?.message ||
+                err?.message ||
+                'Google authentication failed'
+            );
+
             setGoogleLoading(false);
           }
         },
@@ -114,24 +172,85 @@ export default function RegisterPage() {
     };
   }, [googleLogin, form.branch, form.batch]);
 
+  // ---------------------------------------------------------------------------
+  // Email registration
+  // ---------------------------------------------------------------------------
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (loading || googleLoading) {
+      return;
+    }
+
     setError('');
 
+    const name = form.name.trim();
+    const email = form.email.trim();
+
+    if (!name || !email || !form.password) {
+      setError(
+        'Name, email and password are required'
+      );
+      return;
+    }
+
     if (form.password.length < 6) {
-      setError('Password must be at least 6 characters');
+      setError(
+        'Password must be at least 6 characters'
+      );
       return;
     }
 
     setLoading(true);
 
-    const result = await register(form);
+    try {
+      const result = await register({
+        ...form,
+        name,
+        email,
+      });
 
-    if (!result.success) {
-      setError(result.message);
+      if (result?.success) {
+        /*
+         * Backend has now:
+         *
+         * 1. Created the user
+         * 2. Generated the OTP
+         * 3. Sent the verification email
+         *
+         * Move the user to the OTP verification page.
+         */
+        router.push(
+          `/verify-email?email=${encodeURIComponent(email)}`
+        );
+
+        return;
+      }
+
+      setError(
+        result?.message ||
+          'Unable to create your account'
+      );
+    } catch (err) {
+      console.error(
+        'Registration error:',
+        err
+      );
+
+      setError(
+        err?.response?.data?.message ||
+          err?.message ||
+          'Unable to create your account. Please try again.'
+      );
+    } finally {
       setLoading(false);
     }
   };
+
+  // ---------------------------------------------------------------------------
+  // UI
+  // ---------------------------------------------------------------------------
 
   return (
     <div className="min-h-screen flex items-center justify-center grid-bg pt-16 px-4 pb-16">
@@ -201,6 +320,7 @@ export default function RegisterPage() {
             onSubmit={handleSubmit}
             className="space-y-4"
           >
+            {/* Name + Email */}
             {[
               {
                 k: 'name',
@@ -241,13 +361,20 @@ export default function RegisterPage() {
                         update(k, e.target.value)
                       }
                       placeholder={placeholder}
-                      className="w-full bg-[#0d0d0d] border border-[#1f1f1f] rounded px-4 py-2.5 pl-10 text-white text-sm font-dosis focus:outline-none focus:border-[#FF6B00] transition-colors placeholder-[#4a4a4a]"
+                      disabled={loading || googleLoading}
+                      autoComplete={
+                        k === 'email'
+                          ? 'email'
+                          : 'name'
+                      }
+                      className="w-full bg-[#0d0d0d] border border-[#1f1f1f] rounded px-4 py-2.5 pl-10 text-white text-sm font-dosis focus:outline-none focus:border-[#FF6B00] transition-colors placeholder-[#4a4a4a] disabled:opacity-60"
                     />
                   </div>
                 </div>
               )
             )}
 
+            {/* Password */}
             <div>
               <label className="text-[#a0a0a0] font-dosis text-xs font-semibold mb-1.5 block uppercase tracking-wide">
                 Password
@@ -257,21 +384,29 @@ export default function RegisterPage() {
                 <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#4a4a4a]" />
 
                 <input
-                  type={show ? 'text' : 'password'}
+                  type={
+                    show ? 'text' : 'password'
+                  }
                   id="register-password"
                   required
                   value={form.password}
                   onChange={(e) =>
-                    update('password', e.target.value)
+                    update(
+                      'password',
+                      e.target.value
+                    )
                   }
                   placeholder="Min. 6 characters"
-                  className="w-full bg-[#0d0d0d] border border-[#1f1f1f] rounded px-4 py-2.5 pl-10 pr-10 text-white text-sm font-dosis focus:outline-none focus:border-[#FF6B00] transition-colors placeholder-[#4a4a4a]"
+                  disabled={loading || googleLoading}
+                  autoComplete="new-password"
+                  className="w-full bg-[#0d0d0d] border border-[#1f1f1f] rounded px-4 py-2.5 pl-10 pr-10 text-white text-sm font-dosis focus:outline-none focus:border-[#FF6B00] transition-colors placeholder-[#4a4a4a] disabled:opacity-60"
                 />
 
                 <button
                   type="button"
                   onClick={() => setShow(!show)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-[#4a4a4a] hover:text-white"
+                  disabled={loading || googleLoading}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-[#4a4a4a] hover:text-white disabled:opacity-50"
                 >
                   {show ? (
                     <EyeOff className="w-4 h-4" />
@@ -282,6 +417,7 @@ export default function RegisterPage() {
               </div>
             </div>
 
+            {/* Branch + Batch */}
             <div className="grid grid-cols-2 gap-3">
               <div>
                 <label className="text-[#a0a0a0] font-dosis text-xs font-semibold mb-1.5 block uppercase tracking-wide">
@@ -291,14 +427,22 @@ export default function RegisterPage() {
                 <select
                   value={form.branch}
                   onChange={(e) =>
-                    update('branch', e.target.value)
+                    update(
+                      'branch',
+                      e.target.value
+                    )
                   }
-                  className="w-full bg-[#0d0d0d] border border-[#1f1f1f] rounded px-4 py-2.5 text-white text-sm font-dosis focus:outline-none focus:border-[#FF6B00]"
+                  disabled={loading || googleLoading}
+                  className="w-full bg-[#0d0d0d] border border-[#1f1f1f] rounded px-4 py-2.5 text-white text-sm font-dosis focus:outline-none focus:border-[#FF6B00] disabled:opacity-60"
                 >
-                  <option value="">Branch</option>
+                  <option value="">
+                    Branch
+                  </option>
 
-                  {branches.map((b) => (
-                    <option key={b}>{b}</option>
+                  {branches.map((branch) => (
+                    <option key={branch}>
+                      {branch}
+                    </option>
                   ))}
                 </select>
               </div>
@@ -311,27 +455,44 @@ export default function RegisterPage() {
                 <select
                   value={form.batch}
                   onChange={(e) =>
-                    update('batch', e.target.value)
+                    update(
+                      'batch',
+                      e.target.value
+                    )
                   }
-                  className="w-full bg-[#0d0d0d] border border-[#1f1f1f] rounded px-4 py-2.5 text-white text-sm font-dosis focus:outline-none focus:border-[#FF6B00]"
+                  disabled={loading || googleLoading}
+                  className="w-full bg-[#0d0d0d] border border-[#1f1f1f] rounded px-4 py-2.5 text-white text-sm font-dosis focus:outline-none focus:border-[#FF6B00] disabled:opacity-60"
                 >
-                  <option value="">Batch</option>
+                  <option value="">
+                    Batch
+                  </option>
 
-                  {years.map((y) => (
-                    <option key={y}>{y}</option>
+                  {years.map((year) => (
+                    <option key={year}>
+                      {year}
+                    </option>
                   ))}
                 </select>
               </div>
             </div>
 
+            {/* Submit */}
             <button
               type="submit"
               id="register-submit"
-              disabled={loading || googleLoading}
+              disabled={
+                loading || googleLoading
+              }
               className="btn-primary w-full justify-center py-3 mt-2"
             >
               {loading ? (
-                <div className="w-5 h-5 border-2 border-black/30 border-t-black rounded-full animate-spin" />
+                <>
+                  <div className="w-5 h-5 border-2 border-black/30 border-t-black rounded-full animate-spin" />
+
+                  <span>
+                    Creating account...
+                  </span>
+                </>
               ) : (
                 <>
                   Create Account
@@ -343,6 +504,7 @@ export default function RegisterPage() {
 
           <p className="text-center text-[#6a6a6a] font-dosis text-sm mt-6 pt-4 border-t border-[#1f1f1f]">
             Already have an account?{' '}
+
             <Link
               href="/login"
               className="text-[#FF6B00] hover:underline font-semibold"
